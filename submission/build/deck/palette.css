@@ -1,0 +1,41 @@
+/* HashWitness deck palette. Every color and type size of the deck lives here: tweak these, rebuild with
+   `node build-deck.mjs`. Colors are estimates inspired by a reference site's STYLE only (no assets copied). */
+:root {
+  /* light slides */
+  --paper: #F5F4F0;        /* warm off-white background */
+  --card: #FFFFFF;
+  --line: #E2DDE8;         /* 1px card borders */
+  --ink: #1A0F2E;          /* very dark aubergine text */
+  --ink-2: #463B57;        /* secondary text */
+  --muted: #625A72;        /* eyebrows, captions */
+  --highlight: #E7D6FB;    /* lavender marker behind key phrases */
+  --dot: #B983F2;          /* diagram joints */
+  --focus: #3A1270;        /* filled deep-purple focus card */
+  --faded: #ECE7F1;        /* inactive cards */
+
+  /* dark panel slide */
+  --panel: #1A0B2E;
+  --panel-ink: #F5F4F0;
+  --panel-muted: #C9C0D8;
+  --accent: #C48CF5;       /* lavender accent word */
+
+  /* gradient slides (deep purple -> magenta, like a sunset) */
+  --grad-1: #1E0646;
+  --grad-2: #4A158C;
+  --grad-3: #8A2A9B;
+  --grad-4: #C04489;
+
+  /* verdicts (on light backgrounds) */
+  --valid: #11704F;
+  --revoked: #A5203A;
+
+  /* app screenshot frames */
+  --frame: #12122A;
+
+  /* type: 5 sizes only, on a 1920x1080 slide */
+  --fs-display: 120px;
+  --fs-h1: 68px;
+  --fs-h2: 40px;
+  --fs-body: 30px;
+  --fs-small: 24px;
+}

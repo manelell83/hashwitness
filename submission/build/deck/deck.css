@@ -1,0 +1,145 @@
+/* Layout of the HashWitness deck. Colors and sizes come from palette.css only. */
+@font-face {
+  font-family: "Hanken Grotesk";
+  src: url("{{FONT}}") format("truetype");
+  font-weight: 100 900;
+  font-display: block;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: #0d0718; }
+body { font-family: "Hanken Grotesk", system-ui, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; overflow: hidden; }
+
+/* stage: 1920x1080, scaled to fit the window by deck.js */
+.stage { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; transform-origin: center center; }
+.slide {
+  position: absolute; inset: 0; width: 1920px; height: 1080px; overflow: hidden;
+  padding: 88px 120px 72px; background: var(--paper);
+  opacity: 0; visibility: hidden; transition: opacity 280ms ease, visibility 0s linear 280ms;
+  font-size: var(--fs-body); line-height: 1.35;
+}
+.slide.is-active { opacity: 1; visibility: visible; transition: opacity 280ms ease; }
+@media (prefers-reduced-motion: reduce) { .slide, .slide.is-active { transition: none; } }
+
+/* type scale (5 sizes) */
+.eyebrow { font-size: var(--fs-small); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin: 0 0 18px; }
+h1 { font-size: var(--fs-h1); font-weight: 300; line-height: 1.08; letter-spacing: -0.02em; margin: 0; max-width: 1500px; }
+h1 b, h1 strong { font-weight: 700; }
+h2 { font-size: var(--fs-h2); font-weight: 600; line-height: 1.15; letter-spacing: -0.01em; margin: 0; }
+p { margin: 0; }
+.small { font-size: var(--fs-small); }
+.muted { color: var(--muted); }
+.ink2 { color: var(--ink-2); }
+.mono { font-family: Consolas, "Cascadia Mono", ui-monospace, monospace; font-size: 0.92em; }
+mark.hl { background: var(--highlight); color: inherit; padding: 0 0.18em; border-radius: 6px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+
+/* common pieces */
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 24px; padding: 36px; }
+.card.is-focus { background: var(--focus); border-color: var(--focus); color: #fff; }
+.card.is-focus .muted, .card.is-focus .ink2 { color: #E4D9F5; }
+.card.is-faded { background: var(--faded); border-color: var(--faded); }
+.pill { display: inline-flex; align-items: center; gap: 12px; border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 10px 22px; font-size: var(--fs-small); font-weight: 600; white-space: nowrap; }
+.pill .arrow { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--ink); color: #fff; font-size: 20px; }
+.tag { display: inline-block; border-radius: 999px; padding: 4px 16px; font-size: var(--fs-small); font-weight: 600; border: 1px solid currentColor; }
+.tag.real { color: var(--valid); }
+.tag.sim { color: var(--revoked); }
+.shot { background: var(--frame); border-radius: 26px; padding: 14px; box-shadow: 0 28px 60px rgba(26, 15, 46, 0.28), 0 4px 12px rgba(26, 15, 46, 0.18); }
+.shot img { display: block; width: 100%; border-radius: 16px; }
+.icon { width: 56px; height: 56px; flex: none; }
+.foot { position: absolute; left: 120px; right: 120px; bottom: 44px; display: flex; justify-content: space-between; font-size: var(--fs-small); color: var(--muted); }
+
+/* gradient slides */
+.slide.grad { background: radial-gradient(1200px 900px at 88% 105%, var(--grad-4) 0%, transparent 60%),
+  linear-gradient(118deg, var(--grad-1) 0%, var(--grad-2) 45%, var(--grad-3) 100%); color: #fff; }
+.slide.grad .eyebrow { color: #E6DAF7; } /* top-left only: dark part of the gradient (5.4:1) */
+.slide.grad .muted, .slide.grad .foot { color: #fff; } /* white stays >= 4.7:1 even on the pink corner */
+
+/* dark panel slide */
+.panel { position: absolute; inset: 40px; border-radius: 40px; background: var(--panel); color: var(--panel-ink); padding: 72px 100px 64px; overflow: hidden; }
+.panel .eyebrow { color: var(--panel-muted); }
+.panel .accent { color: var(--accent); }
+
+/* ---- slide 1: cover ---- */
+.cover-brand { display: flex; align-items: center; gap: 18px; font-size: var(--fs-h2); font-weight: 600; }
+.cover-brand svg { width: 76px; height: 76px; }
+.cover-title { font-size: var(--fs-display); font-weight: 300; letter-spacing: -0.035em; line-height: 1; margin: 150px 0 28px; }
+.cover-title b { font-weight: 800; }
+.cover-sub { font-size: var(--fs-h2); font-weight: 400; line-height: 1.25; max-width: 900px; }
+.cover-team { position: absolute; left: 120px; bottom: 120px; }
+.cover-team .team { font-size: var(--fs-h2); font-weight: 700; margin-bottom: 8px; }
+.cover-art { position: absolute; right: 50px; top: 170px; width: 760px; height: 672px; }
+
+/* ---- slide 2: problem ---- */
+.flow { position: relative; margin-top: 80px; height: 340px; }
+.flow svg.wires { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.node { position: absolute; top: 20px; width: 330px; height: 300px; display: flex; flex-direction: column; gap: 14px; }
+.node h2 { font-size: var(--fs-body); font-weight: 700; }
+.node .verdict-bad { color: var(--revoked); font-weight: 700; }
+.threats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 70px; }
+.threats .card { padding: 30px 32px; display: flex; gap: 22px; align-items: flex-start; }
+.threats h2 { font-size: var(--fs-body); font-weight: 700; margin-bottom: 6px; }
+
+/* ---- slide 3: solution (dark panel) ---- */
+.pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; margin-top: 110px; }
+.pillar { border: 1px solid rgba(245, 244, 240, 0.18); border-radius: 24px; padding: 44px 36px; min-height: 410px; }
+.pillar .num { font-size: var(--fs-small); font-weight: 700; color: var(--accent); letter-spacing: 0.12em; }
+.pillar h2 { margin: 20px 0 16px; }
+.pillar p { color: var(--panel-muted); }
+.rule { margin-top: 60px; display: flex; align-items: center; gap: 24px; border: 1px solid var(--accent); border-radius: 999px; padding: 22px 36px; font-size: var(--fs-body); }
+.rule b { color: var(--accent); }
+
+/* ---- slide 4: product ---- */
+.product { display: grid; grid-template-columns: 1060px 1fr; gap: 60px; margin-top: 56px; }
+.outcomes { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 34px; }
+.outcomes .pill b { color: var(--revoked); }
+.video-card { margin-top: 32px; display: flex; gap: 28px; align-items: center; padding: 24px 28px; cursor: pointer; }
+.video-card svg.qr { width: 190px; height: 190px; flex: none; }
+.video-card .play { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--ink); color: #fff; font-size: 20px; margin-bottom: 12px; }
+
+/* ---- slide 5: technology & Hedera ---- */
+.tech { display: grid; grid-template-columns: 1010px 1fr; gap: 56px; margin-top: 40px; }
+.arch { position: relative; height: 760px; }
+.arch svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.box { position: absolute; border: 1px solid var(--line); background: var(--card); border-radius: 20px; padding: 16px 22px; font-size: var(--fs-small); line-height: 1.3; }
+.box b { display: block; font-size: var(--fs-small); font-weight: 700; }
+.box.hedera { border-color: var(--focus); }
+.box.core { background: var(--focus); border-color: var(--focus); color: #fff; }
+.why { display: flex; flex-direction: column; gap: 24px; }
+.why .card { padding: 28px 32px; }
+.why h2 { font-size: var(--fs-body); font-weight: 700; margin-bottom: 6px; }
+
+/* ---- slide 6: impact ---- */
+.audience { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 64px; }
+.audience .card { min-height: 290px; display: flex; flex-direction: column; gap: 18px; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 64px; }
+.stat .big { font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+.stat p { margin-top: 10px; }
+.complement { margin-top: 64px; }
+
+/* ---- slide 7: vision ---- */
+.vision { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 76px; }
+.vcard { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.28); border-radius: 24px; padding: 36px; min-height: 430px; }
+.vcard h2 { margin-bottom: 22px; }
+.vcard ul { margin: 0; padding-left: 1.1em; display: flex; flex-direction: column; gap: 14px; }
+.vision-foot { position: absolute; left: 120px; right: 120px; bottom: 60px; display: flex; align-items: center; justify-content: space-between; }
+.vision-foot svg.qr { width: 150px; height: 150px; background: #fff; border-radius: 16px; padding: 10px; }
+
+/* ---- chrome (screen only) ---- */
+.counter { position: fixed; right: 18px; bottom: 14px; font: 600 15px/1 "Hanken Grotesk", sans-serif; color: rgba(255, 255, 255, 0.75); background: rgba(13, 7, 24, 0.55); padding: 8px 12px; border-radius: 999px; z-index: 10; user-select: none; }
+.notes { position: fixed; left: 0; right: 0; bottom: 0; max-height: 38vh; overflow: auto; background: rgba(13, 7, 24, 0.94); color: #f5f4f0; font: 400 18px/1.5 "Hanken Grotesk", sans-serif; padding: 18px 28px 44px; z-index: 11; display: none; }
+.notes.is-open { display: block; }
+.notes b { color: #C48CF5; }
+.modal { position: fixed; inset: 0; background: rgba(13, 7, 24, 0.92); display: none; place-items: center; z-index: 20; }
+.modal.is-open { display: grid; }
+.modal video { width: min(92vw, 160vh); max-height: 88vh; border-radius: 12px; background: #000; }
+.modal button { position: absolute; top: 18px; right: 22px; font: 600 18px "Hanken Grotesk", sans-serif; background: #f5f4f0; color: #1a0f2e; border: 0; border-radius: 999px; padding: 10px 18px; cursor: pointer; }
+template.speaker-notes { display: none; }
+
+/* print / PDF: one 1920x1080 page per slide, no chrome, no scaling */
+@page { size: 1920px 1080px; margin: 0; }
+@media print {
+  html, body { background: none; overflow: visible; height: auto; }
+  .stage { position: static; transform: none !important; width: 1920px; height: auto; }
+  .slide { position: relative; opacity: 1; visibility: visible; transition: none; break-after: page; page-break-after: always; }
+  .slide:last-child { break-after: auto; page-break-after: auto; }
+  .counter, .notes, .modal { display: none !important; }
+}
