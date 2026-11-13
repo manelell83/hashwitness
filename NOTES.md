@@ -71,10 +71,21 @@ A real trust anchor would be the latest `(sequenceNumber, runningHash)` read **d
 
 ## 7. Unverified assumptions (full list)
 
-1. JS SDK receipt field names and key-parsing helpers (§1).
-2. `TopicInfoQuery` exposes running hash + sequence number (§5).
+1. ~~JS SDK receipt field names and key-parsing helpers~~ **Resolved in M1** from `@hiero-ledger/sdk@2.91.0` typings: `receipt.topicSequenceNumber`, `receipt.topicRunningHash`, `PrivateKey.fromStringDer/fromStringECDSA`.
+2. ~~`TopicInfoQuery` exposes running hash + sequence number~~ **Resolved in M1**: `TopicInfo.runningHash` (Uint8Array) and `sequenceNumber` (Long). **[TESTED]** on our registry topic: the mirror chain head equals the consensus-node anchor (see §8).
 3. Testnet public mirror rate limit.
 4. Exact auth header/path for Validation Cloud and Arkhia testnet; free-tier terms for Validation Cloud.
 5. Whether the three keyed providers run fully independent importers (vs. proxying Hedera's mirror). We cannot prove independence from outside.
 6. Mirror lag between providers (affects `INCONSISTENT` false positives). Measure in M2. Plan: compare only up to the minimum common sequence number, and treat a mirror that is merely *behind* as lagging rather than lying, unless it is behind the consensus-node anchor.
 7. OpenRouter `provider.require_parameters` behavior when unsupported by the chosen model (docs say request fails → falls to our fallback).
+
+## 8. M1 testnet run (2026-11-13)
+
+- Operator account `0.0.11414541`. Topics (both with submit key = operator key):
+  registry `0.0.11443553` (https://hashscan.io/testnet/topic/0.0.11443553),
+  attestation `0.0.11443554` (https://hashscan.io/testnet/topic/0.0.11443554).
+- seq 1 issue DIP-001, seq 2 issue DIP-002, seq 3 revoke DIP-001.
+- **[TESTED]** Via `testnet.mirrornode.hedera.com`: DIP-001 ISSUED → REVOKED, DIP-002 ISSUED; chain verified locally;
+  chain head (seq 3) == `TopicInfoQuery` anchor from a consensus node.
+- Consequence for M2: the consensus node can be a few seconds ahead of mirrors right after a submit. A mirror behind
+  the anchor whose chain is a valid prefix should be reported as *lagging*, not lying; the verifier should retry briefly.
