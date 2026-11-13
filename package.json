@@ -1,0 +1,26 @@
+{
+  "name": "hashwitness",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "topics:create": "tsx --env-file=.env scripts/create-topics.ts",
+    "credential": "tsx --env-file=.env scripts/credential.ts",
+    "status": "tsx --env-file=.env scripts/status.ts"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.6",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2",
+    "vitest": "5.1.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}
