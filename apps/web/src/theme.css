@@ -1,0 +1,167 @@
+/* HashWitness theme: the ONLY place for colors, fonts, spacing, radii, motion.
+   Load fonts in index.html:
+   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"> */
+
+:root {
+  /* Palette */
+  --bg: #12122a;
+  --surface: #1b1b38;
+  --surface-2: #232347;
+  --border: rgba(255, 255, 255, 0.09);
+  --text: #f4f4ff;
+  --text-muted: #a9a7d6;
+  --accent: #5b58c9;
+  --accent-hover: #6f6cdb;
+  --accent-soft: #8b88f0;
+
+  /* Verdicts: always paired with an icon and a word, never color alone */
+  --valid: #34d399;
+  --revoked: #f87171;
+  --inconsistent: #fbbf24;
+
+  /* Type */
+  --font-sans: "Montserrat", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --fs-body: 1rem;      /* 16px minimum: the demo is screen-shared */
+  --fs-small: 0.875rem;
+  --fs-h2: 1.5rem;
+  --fs-h1: clamp(2.25rem, 5vw, 3.75rem);
+
+  /* Shape and space */
+  --radius-card: 20px;
+  --radius-pill: 999px;
+  --radius-input: 12px;
+  --space: 1rem;
+  --gap: 1.5rem;
+
+  /* Motion */
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur: 280ms;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: 1.55;
+}
+
+/* One quiet ambient glow behind the app. Slow, low contrast. */
+.app-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(40rem 30rem at 15% 10%, rgba(91, 88, 201, 0.28), transparent 60%),
+    radial-gradient(35rem 28rem at 90% 85%, rgba(139, 136, 240, 0.16), transparent 60%),
+    var(--bg);
+  animation: glow-drift 28s ease-in-out infinite alternate;
+}
+@keyframes glow-drift {
+  to { transform: translate3d(-2%, 2%, 0) scale(1.06); }
+}
+
+h1 { font-size: var(--fs-h1); line-height: 1.1; font-weight: 700; margin: 0 0 var(--space); }
+h2 { font-size: var(--fs-h2); font-weight: 600; margin: 0 0 var(--space); }
+p, .muted { color: var(--text-muted); }
+.mono { font-family: var(--font-mono); font-size: var(--fs-small); }
+
+/* Surfaces */
+.card {
+  background: linear-gradient(160deg, var(--surface), rgba(27, 27, 56, 0.6));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: calc(var(--space) * 1.5);
+  backdrop-filter: blur(10px);
+}
+
+/* Buttons */
+.btn {
+  font: 600 var(--fs-body) var(--font-sans);
+  color: var(--text);
+  background: var(--accent);
+  border: 0;
+  border-radius: var(--radius-pill);
+  padding: 0.75rem 1.75rem;
+  cursor: pointer;
+  transition: background var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.btn:hover { background: var(--accent-hover); transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.btn-ghost { background: transparent; border: 1px solid var(--border); }
+
+:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 3px; }
+
+.input {
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-input);
+  padding: 0.75rem 1rem;
+}
+
+/* Verdicts */
+.verdict {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 700;
+  font-size: var(--fs-h2);
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--radius-pill);
+  border: 2px solid currentColor;
+}
+.verdict-valid { color: var(--valid); background: rgba(52, 211, 153, 0.1); }
+.verdict-revoked { color: var(--revoked); background: rgba(248, 113, 113, 0.1); }
+.verdict-inconsistent { color: var(--inconsistent); background: rgba(251, 191, 36, 0.1); }
+
+/* Moment 1: the verdict lands when the result arrives (add .is-revealed) */
+.verdict.is-revealed { animation: verdict-pop 420ms var(--ease) both; }
+@keyframes verdict-pop {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Mirror table */
+.mirror-row {
+  display: grid;
+  grid-template-columns: 1.4fr 2fr 6rem 8rem;
+  gap: var(--space);
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-input);
+  border: 1px solid transparent;
+}
+.mirror-row.is-agree { border-color: rgba(52, 211, 153, 0.25); }
+
+/* Moment 2: the lying mirror gets flagged (add .is-liar); runs 3 times then holds */
+.mirror-row.is-liar {
+  border-color: var(--revoked);
+  background: rgba(248, 113, 113, 0.1);
+  animation: liar-flag 900ms ease-in-out 3;
+}
+@keyframes liar-flag {
+  50% { box-shadow: 0 0 0 6px rgba(248, 113, 113, 0.22); }
+}
+
+/* Attack Lab: naive app vs HashWitness, side by side */
+.lab { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
+@media (max-width: 800px) { .lab { grid-template-columns: 1fr; } }
+.lab-naive { border-color: rgba(248, 113, 113, 0.35); }
+.lab-witness { border-color: rgba(139, 136, 240, 0.5); }
+
+/* Audit log entry slides in when a new HCS attestation arrives (add .is-new) */
+.log-entry.is-new { animation: log-in 360ms var(--ease) both; }
+@keyframes log-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

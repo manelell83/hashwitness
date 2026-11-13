@@ -1,0 +1,73 @@
+/* Layout only. Every color, font, radius and duration comes from theme.css variables. */
+
+.topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space);
+  padding: var(--space) calc(var(--space) * 1.5);
+  border-bottom: 1px solid var(--border);
+}
+.brand { display: flex; align-items: center; gap: 0.6rem; }
+.wordmark { font-family: var(--font-sans); font-weight: 700; font-size: 1.25rem; color: var(--text); }
+.topbar nav { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+.container { max-width: 72rem; margin: 0 auto; padding: var(--gap) var(--space); }
+.stack { display: grid; gap: var(--gap); }
+.row { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+.row .input { flex: 1 1 14rem; min-width: 0; }
+
+.verify-form label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
+.verdict-card { display: grid; justify-items: start; gap: 0.5rem; }
+.verdict-neutral { color: var(--text-muted); background: var(--surface-2); }
+
+.error { color: var(--revoked); font-weight: 600; }
+.btn:disabled { opacity: 0.6; cursor: progress; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Hashes: middle-truncated, with a copy button */
+.hash { display: inline-flex; align-items: center; gap: 0.4rem; max-width: 100%; }
+.copy-btn {
+  font: 500 var(--fs-small) var(--font-sans);
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 0.1rem 0.6rem;
+  cursor: pointer;
+}
+
+/* Mirror table */
+.mirror-table { display: grid; gap: 0.4rem; }
+.mirror-head { color: var(--text-muted); font-size: var(--fs-small); font-weight: 600; }
+.mirror-row > span { min-width: 0; overflow-wrap: anywhere; }
+.mirror-table.is-compact .mirror-row { grid-template-columns: 1.6fr 5rem 9rem; }
+.state-agree { color: var(--valid); font-weight: 600; }
+.state-forged, .state-stale, .state-split_view, .state-broken_chain { color: var(--revoked); font-weight: 600; }
+.state-unreachable { color: var(--text-muted); }
+
+/* Attack Lab */
+.mode-switch { border: 0; padding: 0; margin: 0 0 var(--space); }
+.mode-switch legend { font-weight: 600; margin-bottom: 0.5rem; }
+.segmented { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.lab > .card { display: grid; align-content: start; gap: var(--space); }
+.verdict { justify-self: start; }
+.lab > .card > p { margin: 0; }
+
+/* Report */
+.facts { display: grid; grid-template-columns: max-content 1fr; gap: 0.4rem var(--space); margin: 0 0 var(--space); }
+.facts dt { color: var(--text-muted); }
+.facts dd { margin: 0; min-width: 0; }
+.diff { margin: 0 0 var(--space); padding-left: 1.2rem; }
+.attested { margin: 0; }
+.attested a { color: var(--accent-soft); }
+h3 { font-size: var(--fs-body); margin: 0 0 0.5rem; }
+
+/* Narrow screens: the 4-column mirror row stacks into two columns */
+@media (max-width: 640px) {
+  .mirror-row, .mirror-table.is-compact .mirror-row { grid-template-columns: 1fr 1fr; }
+  .mirror-head { display: none; }
+  .facts { grid-template-columns: 1fr; }
+  .verdict { font-size: var(--fs-body); }
+}

@@ -7,14 +7,15 @@
   },
   "scripts": {
     "test": "vitest run",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p apps/web --noEmit",
     "topics:create": "tsx --env-file=.env scripts/create-topics.ts",
     "credential": "tsx --env-file=.env scripts/credential.ts",
     "status": "tsx --env-file=.env scripts/status.ts",
     "verify": "tsx --env-file=.env scripts/verify.ts",
     "attack": "tsx scripts/attack.ts",
     "fake-mirror": "tsx packages/fake-mirror/src/server.ts",
-    "audit-log": "tsx --env-file=.env scripts/audit-log.ts"
+    "audit-log": "tsx --env-file=.env scripts/audit-log.ts",
+    "dev": "pnpm --parallel --filter @hashwitness/fake-mirror --filter @hashwitness/api --filter @hashwitness/web run dev"
   },
   "devDependencies": {
     "@types/node": "26.6.6",

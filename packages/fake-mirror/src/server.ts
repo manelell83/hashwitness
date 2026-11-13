@@ -4,6 +4,11 @@ const port = Number(process.env.FAKE_MIRROR_PORT ?? 5551);
 const upstream = process.env.FAKE_MIRROR_UPSTREAM ?? "https://testnet.mirrornode.hedera.com";
 
 // Bound to localhost only: the admin endpoint has no authentication.
-createApp({ upstream }).listen(port, "127.0.0.1", () => {
+// Express 5 passes listen errors (e.g. port in use) to the callback: fail loudly instead of exiting silently.
+createApp({ upstream }).listen(port, "127.0.0.1", (err?: Error) => {
+  if (err) {
+    console.error(`fake mirror could not listen on ${port}: ${err.message}`);
+    process.exit(1);
+  }
   console.log(`fake mirror on http://127.0.0.1:${port} -> ${upstream} (mode: honest)`);
 });

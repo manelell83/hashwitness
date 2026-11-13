@@ -11,7 +11,9 @@ export interface AttackConfig {
   replayHide: number;
 }
 
-export const DEFAULT_CONFIG: AttackConfig = { mode: "honest", tamperStyle: "drop-revoke", replayHide: 1 };
+// replayHide 2 matches the demo registry (issue DIP-001, issue DIP-002, revoke DIP-001, issue DIP-003):
+// the stale view must predate the revoke for the replay to fool anyone.
+export const DEFAULT_CONFIG: AttackConfig = { mode: "honest", tamperStyle: "drop-revoke", replayHide: 2 };
 
 /** The client the equivocating mirror tells the truth to (it lies to everyone else). */
 export const TRUSTED_CLIENT = "hashwitness";

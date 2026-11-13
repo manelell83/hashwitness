@@ -130,3 +130,17 @@ Verdict rules (`packages/core/src/verify.ts`, deterministic, no LLM):
 - **[TESTED]** Explorer link `https://hashscan.io/testnet/transaction/<consensus_timestamp>` resolves to the right
   transaction (opened in a browser). Cost per attestation: **0.0053 ℏ ≈ $0.00034** (HashScan, charged fee).
 - Only attestations paid by the operator account count in the audit log (topic also has a submit key).
+
+## 11. M4 web UI (2026-11-13)
+
+- `pnpm dev` starts the fake mirror (5551), the API (`apps/api`, 5552, holds the operator key) and the web app
+  (`apps/web`, Vite + React, http://localhost:5173). Every UI verification publishes an HCS attestation.
+- **[TESTED in browser]** Verify screen: DIP-002 → ✓ Valid, mirror table, forensic report, attestation link.
+  Attack Lab, DIP-001: naive app shows ✓ Valid under tamper / replay / equivocate; HashWitness shows ✕ Revoked and
+  flags the attacker as Forged history / Stale view / Two-faced. Desktop 1280 px (side by side) and mobile 375 px
+  (stacked, no horizontal scroll, min body text 16 px); keyboard focus ring visible.
+- Design brief applied: `theme.css` and `logo.svg` copied unchanged; `app.css` is layout only and uses theme
+  variables only. Motion moment 1: mirror rows appear one by one (120 ms, JS timers, skipped under reduced motion),
+  liar row `.is-liar`, verdict `.is-revealed`. Moments 2 and 3 belong to M6 screens.
+- Fake mirror default `replayHide` changed 1 → 2 so the stale view predates the revoke in the demo registry.
+- Found and fixed: Express 5 passes `listen` errors to the callback, so a port clash used to exit silently.
