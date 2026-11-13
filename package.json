@@ -30,6 +30,9 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild"
+    ],
+    "ignoredBuiltDependencies": [
+      "protobufjs"
     ]
   }
 }
