@@ -1,0 +1,16 @@
+{
+  "name": "hashwitness-submission-build",
+  "private": true,
+  "type": "module",
+  "description": "Builds submission/ (screenshots, demo video, self-contained HTML deck, PDF). Not part of the app.",
+  "scripts": {
+    "shots": "node capture.mjs",
+    "video": "node record.mjs",
+    "deck": "node build-deck.mjs",
+    "pdf": "node export-pdf.mjs"
+  },
+  "dependencies": {
+    "playwright": "1.57.0",
+    "qrcode": "^1.5.4"
+  }
+}
