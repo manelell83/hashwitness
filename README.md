@@ -134,7 +134,7 @@ scenarios (mirror lag) labelled replay. Accuracy 84 %.
 
 **AI agent** (`pnpm sim:llm`, `openai/gpt-oss-20b`, first 40 scenarios, 0 fallbacks): tamper 5/5, replay 7/7,
 equivocation 6/6, benign 15/22 (7 lag cases labelled replay). Accuracy 83 %, identical to the rules on the same
-scenarios. Total OpenRouter spend for all model tests, live demo runs and this evaluation: **$0.0046**.
+scenarios. Total OpenRouter spend for all model tests, live demo runs and this evaluation: **$0.0057** (measured).
 
 ## Known limitations
 
