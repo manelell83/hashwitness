@@ -55,6 +55,13 @@ export function App() {
       </header>
       <main className="container">
         {error && <p className="error" role="alert">{error}</p>}
+        {config?.offline && (
+          <p className="offline-banner" role="status">
+            <strong>Offline demo.</strong> Mirror responses and the consensus anchor are replayed from a cache saved
+            {config.offline.savedAt ? ` ${new Date(config.offline.savedAt).toLocaleString()}` : ""}; AI answers are recorded
+            LLM outputs. All checks run for real on that data. Nothing is published to Hedera.
+          </p>
+        )}
         {screen === "verify" && <VerifyScreen />}
         {screen === "lab" && config && <AttackLabScreen config={config} />}
         {screen === "audit" && <AuditLogScreen />}

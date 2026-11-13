@@ -2,6 +2,7 @@
 //   1. registry + attestation topics (created only if missing; IDs written into .env)
 //   2. registry content: issue DIP-001, issue DIP-002, revoke DIP-001, issue DIP-003 (only if the topic is empty)
 //   3. simulation results for the Metrics screen (seeded, reproducible)
+//   4. offline cache: every real mirror's view, the consensus anchor and the audit topic (for pnpm demo:offline)
 //   pnpm demo:seed
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -10,7 +11,9 @@ import { credentialStatus, fetchTopicMessages, type RegistryEvent, type Verifica
 import { agentConfigFromEnv, analyze } from "@hashwitness/agent";
 import { runSimulation } from "@hashwitness/sim/run";
 import { DEFAULT_SIM } from "@hashwitness/sim/world";
-import { canonicalJson, demoDiploma, env, operatorKey, PUBLIC_MIRROR, sha256Hex, submitMessage, testnetClient } from "./lib.ts";
+import {
+  anchorFor, cacheFetch, canonicalJson, demoDiploma, env, hashscanTopic, operatorKey, PUBLIC_MIRROR, realMirrors, sha256Hex, submitMessage, testnetClient,
+} from "./lib.ts";
 
 // HW_ENV_FILE lets the seed be tested against a copy without touching the real .env.
 const ENV_FILE = process.env.HW_ENV_FILE ?? new URL("../.env", import.meta.url);
@@ -79,4 +82,26 @@ writeFileSync(new URL("metrics.json", out), JSON.stringify(report, null, 2));
 console.log(`✓ simulation: ${report.scenarios} scenarios (seed ${report.seed}) → .data/sim/metrics.json`);
 const e = report.confusionLlm?.engine;
 console.log(e ? `✓ LLM confusion matrix: ${report.confusionLlm!.scenarios} scenarios from recordings (${e.replay} recorded, ${e.fallback} missing → excluded)` : "· no LLM recordings: Metrics shows the rule-based matrix only");
-console.log("\nReady. Start the demo with: pnpm dev   (then open http://localhost:5173)");
+// 4. Offline cache (also refreshed by every online verification)
+const real = realMirrors();
+let cached = 0;
+for (const m of real) {
+  try {
+    await fetchTopicMessages(m, registry, { fetchImpl: cacheFetch });
+    cached++;
+  } catch (e) {
+    console.warn(`! ${m.name}: ${(e as Error).message} (not cached; it will show as unreachable offline)`);
+  }
+}
+const anchor = await anchorFor(registry);
+await fetchTopicMessages(PUBLIC_MIRROR, env("ATTESTATION_TOPIC_ID"), { fetchImpl: cacheFetch });
+console.log(`✓ offline cache: ${cached}/${real.length} real mirrors (${real.map((m) => m.name).join(", ")}), anchor seq ${anchor.sequence}, audit topic`);
+
+console.log(`
+Ready.
+  App (open this):   http://localhost:5173
+  API:               http://127.0.0.1:5552/api/config
+  Attacker mirror:   http://127.0.0.1:5551/admin/mode
+  Registry topic:    ${hashscanTopic(registry)}
+  Attestation topic: ${hashscanTopic(env("ATTESTATION_TOPIC_ID"))}
+Offline backup (no testnet, no LLM): pnpm demo:offline`);

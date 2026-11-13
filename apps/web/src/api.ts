@@ -13,6 +13,8 @@ export interface Config {
   k: number;
   registryTopic: string;
   attestationTopic: string;
+  /** Set when the demo runs offline from cached mirror responses (pnpm demo:offline). */
+  offline: { savedAt: string | null } | null;
 }
 export interface VerifyOutcome {
   result: VerificationResult;

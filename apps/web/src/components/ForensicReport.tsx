@@ -44,6 +44,7 @@ export function ForensicReport({ outcome }: { outcome: VerifyOutcome }) {
           <a href={attestation.transactionUrl} target="_blank" rel="noreferrer">View on HashScan ↗</a>
         </p>
       )}
+      {!attestation && <p className="attested muted">Not published to Hedera (offline demo).</p>}
     </section>
   );
 }

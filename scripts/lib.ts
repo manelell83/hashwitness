@@ -1,4 +1,6 @@
 import { mkdirSync, writeFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { cachedAnchor, mirrorCacheFetch } from "@hashwitness/core/mirror-cache";
 import { AccountId, Client, PrivateKey, TopicInfoQuery, TopicMessageSubmitTransaction } from "@hiero-ledger/sdk";
 import { buildAttestation, encodeAttestation, type Anchor, type Attestation, type MirrorConfig, type Report } from "@hashwitness/core";
 
@@ -117,3 +119,8 @@ export async function readAnchor(topicId: string): Promise<Anchor> {
 export { canonicalJson, sha256Hex } from "@hashwitness/core";
 
 export const hashscanTopic = (topicId: string) => `https://hashscan.io/testnet/topic/${topicId}`;
+
+/** Offline demo cache (see packages/core/src/mirrorCache.ts). Filled by every online run, used by `pnpm demo:offline`. */
+export const MIRROR_CACHE_DIR = fileURLToPath(new URL("../.data/mirror-cache/", import.meta.url));
+export const cacheFetch = mirrorCacheFetch(MIRROR_CACHE_DIR);
+export const anchorFor = (topicId: string) => cachedAnchor(MIRROR_CACHE_DIR, topicId, readAnchor);

@@ -33,7 +33,7 @@ export interface NaiveOutcome {
 }
 
 export interface ApiDeps {
-  config: () => { mirrors: string[]; attackerMirror: string; k: number; registryTopic: string; attestationTopic: string };
+  config: () => { mirrors: string[]; attackerMirror: string; k: number; registryTopic: string; attestationTopic: string; offline: { savedAt: string | null } | null };
   verify: (credentialId: string, opts: { includeAttacker: boolean }) => Promise<VerifyOutcome>;
   /** What an app that trusts ONE mirror would conclude (no quorum, no chain check, no anchor). */
   naive: (credentialId: string, mirror: "attacker" | "public") => Promise<NaiveOutcome>;
