@@ -19,7 +19,8 @@
     "agent:record": "tsx --env-file=.env scripts/agent-record.ts",
     "sim": "tsx packages/sim/src/cli.ts",
     "demo:seed": "tsx --env-file=.env scripts/seed-demo.ts",
-    "demo": "pnpm demo:seed && pnpm dev"
+    "demo": "pnpm demo:seed && pnpm dev",
+    "llm:probe": "tsx --env-file=.env scripts/llm-probe.ts"
   },
   "devDependencies": {
     "@types/node": "26.6.6",
