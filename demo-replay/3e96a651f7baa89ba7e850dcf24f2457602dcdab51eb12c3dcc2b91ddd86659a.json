@@ -1,0 +1,9 @@
+{
+  "model": "openai/gpt-oss-20b",
+  "analysis": {
+    "attackType": "tamper",
+    "confidence": 0.95,
+    "explanation": "Mirror M2 is in state \"forged\" and reports lastSequence 3, missing sequence 4 and having altered sequence 3, while M1 agrees on sequence 4 and status REVOKED. This indicates M2 served altered or removed messages, a tampering attack.",
+    "recommendedAction": "Isolate mirror M2, audit its logs, replace or reconfigure it, and notify the network operators to prevent further tampering. Verify all other mirrors for consistency."
+  }
+}

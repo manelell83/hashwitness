@@ -75,6 +75,15 @@ h3 { font-size: var(--fs-body); margin: 0 0 0.5rem; }
 .ai-analysis p { margin: 0 0 0.5rem; color: var(--text); }
 .ai-analysis p.muted, .ai-analysis .muted { color: var(--text-muted); }
 .ai-headline { font-size: var(--fs-body); }
+.ai-engine {
+  display: inline-block;
+  padding: 0.15rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: var(--fs-small);
+}
+.ai-analysis p.ai-engine.is-llm { border-color: var(--accent-soft); color: var(--text); }
+.ai-analysis p.ai-engine.is-fallback { color: var(--text-muted); }
 .ai-disagrees { color: var(--inconsistent); font-weight: 600; }
 
 /* Audit log */

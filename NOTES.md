@@ -156,7 +156,7 @@ Verdict rules (`packages/core/src/verify.ts`, deterministic, no LLM):
   5 s timeout; `provider.require_parameters: true` only when the base URL is OpenRouter.
 - Invalid JSON → one retry → deterministic classifier. Timeout / HTTP error / no key → deterministic classifier at once.
 - Cache: `.data/agent-cache/<model>-<evidenceHash>.json`. `DEMO_REPLAY=1`: no network; serves
-  `packages/agent/recordings/<evidenceHash>.json` (copied from REAL cached runs by `pnpm agent:record`), else the
+  `demo-replay/<evidenceHash>.json` (copied from REAL cached runs by `pnpm agent:record`), else the
   deterministic classifier. **No recordings exist yet: no LLM key has been configured.**
 - `agreesWithRules` flags when the AI label differs from the rule-based label. The verdict is never changed (tested).
 - The analysis is part of the hashed report: **[TESTED]** attestation #12 (DIP-001, equivocation) → stored report

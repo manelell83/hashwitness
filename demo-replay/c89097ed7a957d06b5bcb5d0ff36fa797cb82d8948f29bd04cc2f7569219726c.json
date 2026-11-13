@@ -1,0 +1,9 @@
+{
+  "model": "openai/gpt-oss-20b",
+  "analysis": {
+    "attackType": "equivocation",
+    "confidence": 0.95,
+    "explanation": "Mirror M2 is in split_view: it reports REVOKED to verifier but ISSUED to other clients. Differences show seq3 altered and seq4 missing for other clients. M1 is consistent. This indicates equivocation by M2.",
+    "recommendedAction": "Flag M2 as malicious, stop using it, notify operator, revoke its access, and monitor for further equivocation."
+  }
+}

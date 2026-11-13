@@ -1,0 +1,9 @@
+{
+  "model": "openai/gpt-oss-20b",
+  "analysis": {
+    "attackType": "replay",
+    "confidence": 0.9,
+    "explanation": "Mirror M2 is stale: lastSequence 2, missing seq 3 and 4, status ISSUED. Mirror M1 agrees with lastSequence 4 and status REVOKED. M2’s shorter history hides the revocation, indicating a replay attack.",
+    "recommendedAction": "Exclude M2 from quorum, request fresh data from other mirrors, monitor for repeated stale responses, and consider revoking M2’s trust."
+  }
+}

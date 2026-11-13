@@ -3,7 +3,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { VerificationResult } from "@hashwitness/core";
+import { sha256Hex, type VerificationResult } from "@hashwitness/core";
 import { classify, ruleAttackType } from "./classifier.ts";
 import { buildEvidence, evidenceHash, needsAnalysis, type Evidence } from "./evidence.ts";
 import { ANALYSIS_JSON_SCHEMA, parseReply, validateAnalysis, type Analysis } from "./schema.ts";
@@ -42,8 +42,13 @@ The verdict was already decided by deterministic cryptographic checks; you do no
 attackType definitions:
 - "tamper": a mirror served altered or removed messages (state "forged" or "broken_chain").
 - "replay": a mirror served a valid but stale, shorter history that hides the latest messages (state "stale").
-- "equivocation": a mirror showed different histories to different clients (state "split_view").
+- "equivocation": ONE mirror showed different histories to different clients (state "split_view"; only then is
+  statusSeenByOtherClients set).
 - "benign_fault": no conflicting data; only availability problems such as unreachable mirrors.
+
+Field meanings: statusSeenByVerifier is what each mirror told HashWitness. Two DIFFERENT mirrors disagreeing with each
+other is NOT equivocation. Classify from the "state" of the mirror(s) that are not "agree"; if several states occur,
+choose in this priority: equivocation > tamper > replay.
 
 Reply with ONLY a JSON object with exactly these keys:
 {"attackType": one of the four values, "confidence": number 0..1, "explanation": string (max 600 chars, cite mirror ids and sequence numbers), "recommendedAction": string (max 300 chars)}.`;
@@ -63,7 +68,11 @@ function writeJson(dir: string, name: string, value: unknown): void {
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, name), JSON.stringify(value, null, 2));
 }
-const cacheName = (model: string, hash: string) => `${model.replace(/[^A-Za-z0-9._-]/g, "_")}-${hash}.json`;
+// The cache key includes a prompt fingerprint, so editing the prompt never serves answers from the old prompt.
+const PROMPT_ID = sha256Hex(SYSTEM_PROMPT).slice(0, 8);
+/** Cache file prefix for one model under the current prompt (used by `pnpm agent:record`). */
+export const cachePrefix = (model: string) => `${model.replace(/[^A-Za-z0-9._-]/g, "_")}-${PROMPT_ID}-`;
+const cacheName = (model: string, hash: string) => `${cachePrefix(model)}${hash}.json`;
 
 interface Stored { model: string; analysis: Analysis }
 
@@ -148,7 +157,7 @@ export function agentConfigFromEnv(root: URL): AgentConfig {
     maxTokens: Number(process.env.LLM_MAX_TOKENS) || 300,
     demoReplay: process.env.DEMO_REPLAY === "1",
     cacheDir: fileURLToPath(new URL(".data/agent-cache/", root)),
-    recordingsDir: fileURLToPath(new URL("packages/agent/recordings/", root)),
+    recordingsDir: fileURLToPath(new URL("demo-replay/", root)),
   };
 }
 
