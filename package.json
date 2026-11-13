@@ -21,7 +21,8 @@
     "demo:seed": "tsx --env-file=.env scripts/seed-demo.ts",
     "demo": "pnpm demo:seed && pnpm dev",
     "llm:probe": "tsx --env-file=.env scripts/llm-probe.ts",
-    "sim:llm": "tsx --env-file=.env packages/sim/src/cli.ts --llm 40 && pnpm -s agent:record"
+    "sim:llm": "tsx --env-file=.env packages/sim/src/cli.ts --llm 40 && pnpm -s agent:record",
+    "mirrors:check": "tsx --env-file=.env scripts/mirrors-check.ts"
   },
   "devDependencies": {
     "@types/node": "26.6.6",

@@ -30,6 +30,19 @@ export function realMirrors(): MirrorConfig[] {
   if (k.VALIDATIONCLOUD_API_KEY) out.push({ name: "validationcloud", baseUrl: `https://testnet.hedera.validationcloud.io/v1/${k.VALIDATIONCLOUD_API_KEY}` });
   // UNVERIFIED: header name; confirm against the Arkhia dashboard.
   if (k.ARKHIA_API_KEY) out.push({ name: "arkhia", baseUrl: "https://pool.arkhia.io/hedera/testnet", headers: { "x-api-key": k.ARKHIA_API_KEY } });
+  // Generic extra mirrors: MIRROR_<n>_URL (+ optional _KEY, _HEADER default x-api-key, _NAME), n = 1..9.
+  // A "{KEY}" placeholder in the URL puts the key in the path instead of a header (Validation Cloud style).
+  for (let n = 1; n <= 9; n++) {
+    const url = k[`MIRROR_${n}_URL`];
+    if (!url) continue;
+    const key = k[`MIRROR_${n}_KEY`];
+    const inPath = url.includes("{KEY}");
+    out.push({
+      name: k[`MIRROR_${n}_NAME`] || new URL(url.replace("{KEY}", "key")).hostname,
+      baseUrl: inPath ? url.replace("{KEY}", key ?? "") : url.replace(/\/$/, ""),
+      ...(key && !inPath ? { headers: { [k[`MIRROR_${n}_HEADER`] || "x-api-key"]: key } } : {}),
+    });
+  }
   return out;
 }
 
