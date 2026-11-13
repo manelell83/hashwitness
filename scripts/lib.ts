@@ -1,6 +1,6 @@
-import { createHash } from "node:crypto";
-import { AccountId, Client, PrivateKey, TopicInfoQuery } from "@hiero-ledger/sdk";
-import type { Anchor, MirrorConfig } from "@hashwitness/core";
+import { mkdirSync, writeFileSync } from "node:fs";
+import { AccountId, Client, PrivateKey, TopicInfoQuery, TopicMessageSubmitTransaction } from "@hiero-ledger/sdk";
+import { buildAttestation, encodeAttestation, type Anchor, type Attestation, type MirrorConfig, type Report } from "@hashwitness/core";
 
 export function env(name: string): string {
   const v = process.env[name];
@@ -38,6 +38,39 @@ export const FAKE_MIRROR: MirrorConfig = {
   baseUrl: process.env.FAKE_MIRROR_URL ?? "http://127.0.0.1:5551",
 };
 
+export const REPORTS_DIR = new URL("../.data/reports/", import.meta.url);
+
+export interface Published {
+  attestation: Attestation;
+  sequence: number;
+  transactionUrl: string;
+}
+
+/**
+ * Stores the full report locally (named by its hash) and anchors its attestation on the attestation topic.
+ * Anyone can later recompute the report's hash and compare it with the one on HCS.
+ */
+export async function publishAttestation(report: Report): Promise<Published> {
+  const attestation = buildAttestation(report);
+  mkdirSync(REPORTS_DIR, { recursive: true });
+  writeFileSync(new URL(`${attestation.reportHash}.json`, REPORTS_DIR), JSON.stringify(report, null, 2));
+  const client = testnetClient();
+  try {
+    const tx = await new TopicMessageSubmitTransaction({
+      topicId: env("ATTESTATION_TOPIC_ID"),
+      message: encodeAttestation(attestation),
+    }).execute(client);
+    const receipt = await tx.getReceipt(client);
+    return {
+      attestation,
+      sequence: receipt.topicSequenceNumber!.toNumber(),
+      transactionUrl: `https://hashscan.io/testnet/transaction/${tx.transactionId.toString()}`,
+    };
+  } finally {
+    client.close();
+  }
+}
+
 /** Topic head straight from a consensus node: the anchor no mirror can fake. */
 export async function readAnchor(topicId: string): Promise<Anchor> {
   const client = testnetClient();
@@ -49,15 +82,6 @@ export async function readAnchor(topicId: string): Promise<Anchor> {
   }
 }
 
-/** Deterministic JSON: keys sorted recursively, no whitespace. */
-export function canonicalJson(v: unknown): string {
-  if (Array.isArray(v)) return `[${v.map(canonicalJson).join(",")}]`;
-  if (v && typeof v === "object") {
-    return `{${Object.keys(v).sort().map((k) => `${JSON.stringify(k)}:${canonicalJson((v as Record<string, unknown>)[k])}`).join(",")}}`;
-  }
-  return JSON.stringify(v);
-}
-
-export const sha256Hex = (s: string) => createHash("sha256").update(s).digest("hex");
+export { canonicalJson, sha256Hex } from "@hashwitness/core";
 
 export const hashscanTopic = (topicId: string) => `https://hashscan.io/testnet/topic/${topicId}`;

@@ -1,8 +1,9 @@
 // Quorum verification of a credential across mirrors.
-//   pnpm verify <credentialId> [--k 2] [--fake] [--no-anchor] [--no-probe]
+//   pnpm verify <credentialId> [--k 2] [--fake] [--no-anchor] [--no-probe] [--no-attest]
 //   --fake       add the local attacker mirror (start it with `pnpm fake-mirror`)
+//   every run publishes an attestation on the attestation topic unless --no-attest
 import { verifyCredential } from "@hashwitness/core";
-import { env, FAKE_MIRROR, readAnchor, realMirrors } from "./lib.ts";
+import { env, FAKE_MIRROR, publishAttestation, readAnchor, realMirrors } from "./lib.ts";
 
 const args = process.argv.slice(2);
 const credentialId = args.find((a) => !a.startsWith("--") && !/^\d+$/.test(a));
@@ -32,4 +33,10 @@ if (r.diff.length) {
     const cells = Object.entries(d.byMirror).map(([n, h]) => `${n}=${h === null ? "MISSING" : h === d.expected ? "ok" : `${h.slice(0, 10)}…`}`);
     console.log(`  seq ${d.sequence} ${d.kind}: ${cells.join("  ")}`);
   }
+}
+
+if (!args.includes("--no-attest")) {
+  const p = await publishAttestation({ v: 1, verification: r, forensic: null }); // forensic: M5
+  console.log(`\nattested on HCS: topic ${env("ATTESTATION_TOPIC_ID")} seq ${p.sequence}  reportHash ${p.attestation.reportHash.slice(0, 16)}…`);
+  console.log(`  ${p.transactionUrl}`);
 }

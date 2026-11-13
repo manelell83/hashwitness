@@ -116,3 +116,17 @@ Verdict rules (`packages/core/src/verify.ts`, deterministic, no LLM):
 - With an anchor, only views reaching the anchor's running hash can be the reference. Liars can then *block* a
   verdict but never *fake* one. Without an anchor, a colluding majority wins (tested, documented limitation).
 - Equivocation needs the split-view probe (a second request as an anonymous client); it doubles queries.
+
+## 10. M3 HCS attestations (2026-11-13)
+
+- After every `pnpm verify` the full report `{v, verification, forensic}` is stored as `.data/reports/<reportHash>.json`
+  (git-ignored) and an attestation is submitted to topic `0.0.11443554`:
+  `{v, targetCredential, registryTopic, verdict, quorumSize (k), mirrorsQueried, mirrorsAgreeing, anchorSequence, digest, reportHash, ts}`.
+  Spec fields plus `v`, `registryTopic`, `mirrorsQueried`, `mirrorsAgreeing`, `anchorSequence` (added by us).
+  `reportHash = SHA-256(canonicalJson(report))`; the M5 forensic output goes inside the hashed report.
+- **[TESTED]** seq 1 DIP-001 REVOKED, seq 2 DIP-002 VALID, seq 3 DIP-001 REVOKED under tamper (fake = forged).
+  `pnpm audit-log` reads them back via the mirror, verifies the topic's running-hash chain, and recomputes each
+  reportHash from the stored file: 3/3 match.
+- **[TESTED]** Explorer link `https://hashscan.io/testnet/transaction/<consensus_timestamp>` resolves to the right
+  transaction (opened in a browser). Cost per attestation: **0.0053 ℏ ≈ $0.00034** (HashScan, charged fee).
+- Only attestations paid by the operator account count in the audit log (topic also has a submit key).

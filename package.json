@@ -13,7 +13,8 @@
     "status": "tsx --env-file=.env scripts/status.ts",
     "verify": "tsx --env-file=.env scripts/verify.ts",
     "attack": "tsx scripts/attack.ts",
-    "fake-mirror": "tsx packages/fake-mirror/src/server.ts"
+    "fake-mirror": "tsx packages/fake-mirror/src/server.ts",
+    "audit-log": "tsx --env-file=.env scripts/audit-log.ts"
   },
   "devDependencies": {
     "@types/node": "26.6.6",
