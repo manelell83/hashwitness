@@ -1,5 +1,8 @@
 // Typed calls to apps/api. Types come from core (type-only imports: no core code runs in the browser).
 import type { CredentialStatus, VerificationResult } from "@hashwitness/core";
+import type { Forensic } from "@hashwitness/agent";
+
+export type { Forensic } from "@hashwitness/agent";
 
 export type { CredentialStatus, MirrorReport, MirrorState, Verdict, VerificationResult, DiffEntry } from "@hashwitness/core";
 
@@ -12,6 +15,7 @@ export interface Config {
 }
 export interface VerifyOutcome {
   result: VerificationResult;
+  forensic: Forensic | null;
   attestation: { sequence: number; reportHash: string; transactionUrl: string } | null;
 }
 export interface NaiveOutcome {

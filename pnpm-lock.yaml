@@ -23,6 +23,9 @@ importers:
 
   apps/api:
     dependencies:
+      '@hashwitness/agent':
+        specifier: workspace:*
+        version: link:../../packages/agent
       '@hashwitness/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -39,6 +42,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@hashwitness/agent':
+        specifier: workspace:*
+        version: link:../../packages/agent
       '@hashwitness/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -65,6 +71,12 @@ importers:
         specifier: 8.3.8
         version: 8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(tsx@4.23.15)
 
+  packages/agent:
+    dependencies:
+      '@hashwitness/core':
+        specifier: workspace:*
+        version: link:../core
+
   packages/core: {}
 
   packages/fake-mirror:
@@ -82,6 +94,9 @@ importers:
 
   scripts:
     dependencies:
+      '@hashwitness/agent':
+        specifier: workspace:*
+        version: link:../packages/agent
       '@hashwitness/core':
         specifier: workspace:*
         version: link:../packages/core

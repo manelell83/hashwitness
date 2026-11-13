@@ -3,6 +3,7 @@
 //   --fake       add the local attacker mirror (start it with `pnpm fake-mirror`)
 //   every run publishes an attestation on the attestation topic unless --no-attest
 import { verifyCredential } from "@hashwitness/core";
+import { agentConfigFromEnv, analyze } from "@hashwitness/agent";
 import { env, FAKE_MIRROR, publishAttestation, readAnchor, realMirrors } from "./lib.ts";
 
 const args = process.argv.slice(2);
@@ -35,8 +36,15 @@ if (r.diff.length) {
   }
 }
 
+const forensic = await analyze(r, agentConfigFromEnv(new URL("../", import.meta.url)));
+if (forensic) {
+  console.log(`\nAI forensic analysis (${forensic.source}${forensic.model ? `, ${forensic.model}` : ""}; proposes, does not decide):`);
+  console.log(`  ${forensic.attackType}  confidence ${forensic.confidence}  ${forensic.agreesWithRules ? "agrees with rules" : "DISAGREES with rule-based label"}`);
+  console.log(`  ${forensic.explanation}\n  action: ${forensic.recommendedAction}`);
+}
+
 if (!args.includes("--no-attest")) {
-  const p = await publishAttestation({ v: 1, verification: r, forensic: null }); // forensic: M5
+  const p = await publishAttestation({ v: 1, verification: r, forensic });
   console.log(`\nattested on HCS: topic ${env("ATTESTATION_TOPIC_ID")} seq ${p.sequence}  reportHash ${p.attestation.reportHash.slice(0, 16)}…`);
   console.log(`  ${p.transactionUrl}`);
 }

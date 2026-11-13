@@ -6,6 +6,7 @@
     "dev": "tsx --env-file=../../.env src/server.ts"
   },
   "dependencies": {
+    "@hashwitness/agent": "workspace:*",
     "@hashwitness/core": "workspace:*",
     "@hashwitness/scripts": "workspace:*",
     "express": "5.3.0"

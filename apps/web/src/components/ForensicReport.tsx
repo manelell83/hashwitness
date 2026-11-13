@@ -1,4 +1,5 @@
 import type { VerifyOutcome } from "../api.ts";
+import { AiAnalysis } from "./AiAnalysis.tsx";
 import { HashText } from "./HashText.tsx";
 
 const KIND = { missing: "missing", altered: "altered", extra: "extra" } as const;
@@ -33,7 +34,8 @@ export function ForensicReport({ outcome }: { outcome: VerifyOutcome }) {
         </>
       )}
 
-      {/* DESIGN: placeholder slot for the AI forensic analysis (M5). */}
+      {/* DESIGN: placement and emphasis of the AI block (kept below the deterministic facts on purpose). */}
+      {outcome.forensic && <AiAnalysis forensic={outcome.forensic} />}
 
       {attestation && (
         <p className="attested">

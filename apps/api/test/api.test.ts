@@ -5,7 +5,7 @@ import { createApi, type ApiDeps } from "../src/app.ts";
 
 const deps: ApiDeps = {
   config: () => ({ mirrors: ["hedera-public"], attackerMirror: "fake", k: 1, registryTopic: "0.0.1", attestationTopic: "0.0.2" }),
-  verify: vi.fn(async () => ({ result: { verdict: "VALID" } as never, attestation: null })),
+  verify: vi.fn(async () => ({ result: { verdict: "VALID" } as never, forensic: null, attestation: null })),
   naive: vi.fn(async (_id, mirror) => ({ mirror, status: "ISSUED" as const, lastSequence: 4, latencyMs: 1 })),
   getAttackMode: async () => ({ mode: "honest" }),
   setAttackMode: async () => { throw new Error("secret-ish internal detail"); },

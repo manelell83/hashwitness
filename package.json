@@ -15,7 +15,8 @@
     "attack": "tsx scripts/attack.ts",
     "fake-mirror": "tsx packages/fake-mirror/src/server.ts",
     "audit-log": "tsx --env-file=.env scripts/audit-log.ts",
-    "dev": "pnpm --parallel --filter @hashwitness/fake-mirror --filter @hashwitness/api --filter @hashwitness/web run dev"
+    "dev": "pnpm --parallel --filter @hashwitness/fake-mirror --filter @hashwitness/api --filter @hashwitness/web run dev",
+    "agent:record": "tsx --env-file=.env scripts/agent-record.ts"
   },
   "devDependencies": {
     "@types/node": "26.6.6",

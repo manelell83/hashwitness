@@ -144,3 +144,21 @@ Verdict rules (`packages/core/src/verify.ts`, deterministic, no LLM):
   liar row `.is-liar`, verdict `.is-revealed`. Moments 2 and 3 belong to M6 screens.
 - Fake mirror default `replayHide` changed 1 → 2 so the stale view predates the revoke in the demo registry.
 - Found and fixed: Express 5 passes `listen` errors to the callback, so a port clash used to exit silently.
+
+## 12. M5 AI forensic agent (2026-11-13)
+
+- `packages/agent`. Input = `Evidence` built from the VerificationResult: verdict, quorum, anchor sequence, per-mirror
+  state / last sequence / statuses, diff kinds and sequence numbers. Mirrors are aliased M1..Mn. No message text,
+  hashes or timestamps from mirrors reach the model (tested).
+- Output schema `{attackType, confidence, explanation, recommendedAction}`, validated by our own strict validator
+  (exact keys, enum, 0..1, length limits). Also sent as `response_format: json_schema, strict: true`.
+- OpenAI-compatible: `LLM_BASE_URL` (default OpenRouter), `LLM_API_KEY`, `LLM_MODEL`; temperature 0, max_tokens 300,
+  5 s timeout; `provider.require_parameters: true` only when the base URL is OpenRouter.
+- Invalid JSON → one retry → deterministic classifier. Timeout / HTTP error / no key → deterministic classifier at once.
+- Cache: `.data/agent-cache/<model>-<evidenceHash>.json`. `DEMO_REPLAY=1`: no network; serves
+  `packages/agent/recordings/<evidenceHash>.json` (copied from REAL cached runs by `pnpm agent:record`), else the
+  deterministic classifier. **No recordings exist yet: no LLM key has been configured.**
+- `agreesWithRules` flags when the AI label differs from the rule-based label. The verdict is never changed (tested).
+- The analysis is part of the hashed report: **[TESTED]** attestation #12 (DIP-001, equivocation) → stored report
+  contains `forensic` (source: fallback), reportHash matches.
+- **[UNVERIFIED]** live OpenRouter call: waiting for `LLM_API_KEY` + `LLM_MODEL`.

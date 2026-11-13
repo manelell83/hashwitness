@@ -1,6 +1,9 @@
 import { credentialStatus, fetchTopicMessages, verifyCredential, CLIENT_HEADER } from "@hashwitness/core";
 import { env, FAKE_MIRROR, publishAttestation, readAnchor, realMirrors } from "@hashwitness/scripts/lib";
+import { agentConfigFromEnv, analyze } from "@hashwitness/agent";
 import { createApi } from "./app.ts";
+
+const agentCfg = agentConfigFromEnv(new URL("../../../", import.meta.url));
 
 const port = Number(process.env.API_PORT ?? 5552);
 const registryTopic = env("REGISTRY_TOPIC_ID");
@@ -23,8 +26,10 @@ const app = createApi({
     const result = await verifyCredential({
       topicId: registryTopic, credentialId, issuer, mirrors, k: Math.min(k, mirrors.length), anchor, probeSplitView: true,
     });
-    const p = await publishAttestation({ v: 1, verification: result, forensic: null }); // forensic: M5
-    return { result, attestation: { sequence: p.sequence, reportHash: p.attestation.reportHash, transactionUrl: p.transactionUrl } };
+    // The verdict is final here. The agent only adds an explanation, which is hashed into the report.
+    const forensic = await analyze(result, agentCfg);
+    const p = await publishAttestation({ v: 1, verification: result, forensic });
+    return { result, forensic, attestation: { sequence: p.sequence, reportHash: p.attestation.reportHash, transactionUrl: p.transactionUrl } };
   },
 
   async naive(credentialId, which) {
@@ -57,4 +62,6 @@ app.listen(port, "127.0.0.1", (err?: Error) => {
     process.exit(1);
   }
   console.log(`api on http://127.0.0.1:${port}  mirrors: ${real.map((m) => m.name).join(", ")} (+ attacker)  k=${k}`);
+  const llm = agentCfg.demoReplay ? "DEMO_REPLAY (recordings, no network)" : agentCfg.apiKey && agentCfg.model ? `LLM ${agentCfg.model}` : "rule-based fallback (no LLM configured)";
+  console.log(`forensic agent: ${llm}`);
 });

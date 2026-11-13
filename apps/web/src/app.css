@@ -64,6 +64,19 @@
 .attested a { color: var(--accent-soft); }
 h3 { font-size: var(--fs-body); margin: 0 0 0.5rem; }
 
+/* AI analysis: secondary to the verdict, set apart from the deterministic facts */
+.ai-analysis {
+  margin: 0 0 var(--space);
+  padding: var(--space);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-input);
+  background: var(--surface-2);
+}
+.ai-analysis p { margin: 0 0 0.5rem; color: var(--text); }
+.ai-analysis p.muted, .ai-analysis .muted { color: var(--text-muted); }
+.ai-headline { font-size: var(--fs-body); }
+.ai-disagrees { color: var(--inconsistent); font-weight: 600; }
+
 /* Narrow screens: the 4-column mirror row stacks into two columns */
 @media (max-width: 640px) {
   .mirror-row, .mirror-table.is-compact .mirror-row { grid-template-columns: 1fr 1fr; }

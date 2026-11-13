@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@hashwitness/agent": "workspace:*",
     "@hashwitness/core": "workspace:*",
     "@hiero-ledger/sdk": "2.91.0"
   },

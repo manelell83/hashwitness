@@ -2,9 +2,11 @@
 // Dependencies are injected so routes and input validation can be tested without network access.
 import express, { type Request, type Response } from "express";
 import type { CredentialStatus, VerificationResult } from "@hashwitness/core";
+import type { Forensic } from "@hashwitness/agent";
 
 export interface VerifyOutcome {
   result: VerificationResult;
+  forensic: Forensic | null;
   attestation: { sequence: number; reportHash: string; transactionUrl: string } | null;
 }
 
