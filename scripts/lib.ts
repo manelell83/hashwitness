@@ -40,6 +40,25 @@ export const FAKE_MIRROR: MirrorConfig = {
 
 export const REPORTS_DIR = new URL("../.data/reports/", import.meta.url);
 
+// DESIGN: demo diploma content; replace with the real credential document format if you have one.
+export const demoDiploma = (credentialId: string) =>
+  ({ credentialId, holder: "Demo Student", degree: "MSc Cybersecurity", school: "Demo School", year: 2026 });
+
+/** Submits one HCS message and returns its sequence number and explorer link. */
+export async function submitMessage(topicId: string, message: string): Promise<{ sequence: number; transactionUrl: string }> {
+  const client = testnetClient();
+  try {
+    const tx = await new TopicMessageSubmitTransaction({ topicId, message }).execute(client);
+    const receipt = await tx.getReceipt(client);
+    return {
+      sequence: receipt.topicSequenceNumber!.toNumber(),
+      transactionUrl: `https://hashscan.io/testnet/transaction/${tx.transactionId.toString()}`,
+    };
+  } finally {
+    client.close();
+  }
+}
+
 export interface Published {
   attestation: Attestation;
   sequence: number;

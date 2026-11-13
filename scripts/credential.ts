@@ -2,9 +2,8 @@
 //   pnpm credential issue  <credentialId> [diploma.json]
 //   pnpm credential revoke <credentialId>
 import { readFileSync } from "node:fs";
-import { TopicMessageSubmitTransaction } from "@hiero-ledger/sdk";
 import { credentialStatus, fetchTopicMessages, type RegistryEvent } from "@hashwitness/core";
-import { PUBLIC_MIRROR, canonicalJson, env, sha256Hex, testnetClient } from "./lib.ts";
+import { PUBLIC_MIRROR, canonicalJson, demoDiploma, env, sha256Hex, submitMessage } from "./lib.ts";
 
 const [action, credentialId, file] = process.argv.slice(2);
 if ((action !== "issue" && action !== "revoke") || !credentialId) {
@@ -16,10 +15,7 @@ const issuer = env("OPERATOR_ID");
 
 let credentialHash: string;
 if (action === "issue") {
-  // DESIGN: demo diploma content; replace with the real credential document format if you have one.
-  const doc = file
-    ? JSON.parse(readFileSync(file, "utf8"))
-    : { credentialId, holder: "Demo Student", degree: "MSc Cybersecurity", school: "Demo School", year: 2026 };
+  const doc = file ? JSON.parse(readFileSync(file, "utf8")) : demoDiploma(credentialId);
   credentialHash = sha256Hex(canonicalJson(doc));
 } else {
   const { messages } = await fetchTopicMessages(PUBLIC_MIRROR, topicId);
@@ -32,12 +28,6 @@ if (action === "issue") {
 }
 
 const event: RegistryEvent = { type: action, credentialId, credentialHash, issuer, ts: new Date().toISOString() };
-const client = testnetClient();
-try {
-  const tx = await new TopicMessageSubmitTransaction({ topicId, message: JSON.stringify(event) }).execute(client);
-  const receipt = await tx.getReceipt(client);
-  console.log(`${action} ${credentialId}: status=${receipt.status.toString()} seq=${receipt.topicSequenceNumber?.toString()}`);
-  console.log(`tx: https://hashscan.io/testnet/transaction/${tx.transactionId.toString()}`);
-} finally {
-  client.close();
-}
+const r = await submitMessage(topicId, JSON.stringify(event));
+console.log(`${action} ${credentialId}: seq=${r.sequence}`);
+console.log(`tx: ${r.transactionUrl}`);

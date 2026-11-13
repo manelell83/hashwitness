@@ -17,7 +17,9 @@
     "audit-log": "tsx --env-file=.env scripts/audit-log.ts",
     "dev": "pnpm --parallel --filter @hashwitness/fake-mirror --filter @hashwitness/api --filter @hashwitness/web run dev",
     "agent:record": "tsx --env-file=.env scripts/agent-record.ts",
-    "sim": "tsx packages/sim/src/cli.ts"
+    "sim": "tsx packages/sim/src/cli.ts",
+    "demo:seed": "tsx --env-file=.env scripts/seed-demo.ts",
+    "demo": "pnpm demo:seed && pnpm dev"
   },
   "devDependencies": {
     "@types/node": "26.6.6",

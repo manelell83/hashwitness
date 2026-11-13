@@ -5,6 +5,7 @@
   "dependencies": {
     "@hashwitness/agent": "workspace:*",
     "@hashwitness/core": "workspace:*",
+    "@hashwitness/sim": "workspace:*",
     "@hiero-ledger/sdk": "2.91.0"
   },
   "exports": {

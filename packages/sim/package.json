@@ -3,7 +3,9 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./run": "./src/run.ts",
+    "./world": "./src/world.ts"
   },
   "dependencies": {
     "@hashwitness/agent": "workspace:*",

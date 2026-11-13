@@ -4,7 +4,7 @@
     {
       "name": "hashwitness",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["dev"],
+      "runtimeArgs": ["demo"],
       "port": 5173
     }
   ]

@@ -208,3 +208,13 @@ Reading: with the consensus anchor neither strategy is ever fooled, so the bandi
 loss. The price is exposure: it learns to avoid the compromised mirrors, so it flags them less often (audit rate is
 the knob). Lag vs replay is ambiguous from a single verification; all false positives are lag flagged as stale.
 These figures depend on the assumed parameters above; they are not measurements of real Hedera mirrors.
+
+## 15. M8 docs + demo (2026-11-13)
+
+- `pnpm demo` = `pnpm demo:seed && pnpm dev`. The seed is idempotent: creates the topics only if missing (writes only
+  those two lines into .env), writes the registry only if empty, refuses to touch a registry in another state, and
+  regenerates the simulation. **[TESTED]** existing topics (no change) and a fresh `.env` copy with blank topic IDs
+  (created 0.0.11443976 / 0.0.11443977, 4 registry messages, then re-run = no change). The real .env was untouched.
+- **[TESTED in browser]** after `pnpm demo`: Attack Lab Tamper → naive Valid, HashWitness Revoked + Forged history + AI block.
+- `scripts/demo.md`: 4-minute script with timings, pre-flight checklist and fallbacks. `README.md`: problem, Mermaid
+  architecture, Hedera usage and why, setup in 5 commands, measured results, honest limitations.

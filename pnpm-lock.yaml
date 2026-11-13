@@ -118,6 +118,9 @@ importers:
       '@hashwitness/core':
         specifier: workspace:*
         version: link:../packages/core
+      '@hashwitness/sim':
+        specifier: workspace:*
+        version: link:../packages/sim
       '@hiero-ledger/sdk':
         specifier: 2.91.0
         version: 2.91.0
