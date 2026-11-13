@@ -8,8 +8,10 @@ export interface StrategyStats {
   verifications: number;
   queries: number; // mirror requests issued (split-view probes included)
   costUnits: number; // sum of per-mirror query costs
-  detectionRate: number; // attacked scenarios flagged / attacked scenarios
-  falsePositiveRate: number; // benign scenarios flagged / benign scenarios
+  detectionRate: number; // attacked scenarios where the attacking mirror was flagged / attacked scenarios
+  falsePositiveRate: number; // benign scenarios where any mirror was flagged as lying / benign scenarios
+  fooledRate: number; // attacked scenarios where the verdict was the attacker's lie (VALID) / attacked scenarios
+  correctVerdictRate: number; // scenarios with the true verdict (REVOKED) / all scenarios
 }
 
 export interface MetricsReport {
@@ -23,6 +25,8 @@ export interface MetricsReport {
   costCurve: { scenario: number; bandit: number; baseline: number }[];
   /** Agent classification vs ground truth. matrix[actual][predicted], indices follow `labels`. */
   confusion: { labels: AttackLabel[]; matrix: number[][]; classifier: string };
+  /** The simulation's assumptions (mirror pool, attack rates, bandit parameters), exported with the results. */
+  config?: unknown;
 }
 
 const isRate = (x: unknown) => typeof x === "number" && x >= 0 && x <= 1;
@@ -30,7 +34,8 @@ const isCount = (x: unknown) => Number.isFinite(x) && (x as number) >= 0;
 
 function stats(s: unknown): s is StrategyStats {
   const o = s as Record<string, unknown>;
-  return !!o && isCount(o.verifications) && isCount(o.queries) && isCount(o.costUnits) && isRate(o.detectionRate) && isRate(o.falsePositiveRate);
+  return !!o && isCount(o.verifications) && isCount(o.queries) && isCount(o.costUnits) && isRate(o.detectionRate)
+    && isRate(o.falsePositiveRate) && isRate(o.fooledRate) && isRate(o.correctVerdictRate);
 }
 
 /** Shape check for a metrics file read from disk. */

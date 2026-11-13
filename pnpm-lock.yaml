@@ -98,7 +98,17 @@ importers:
         specifier: 5.0.6
         version: 5.0.6
 
-  packages/sim: {}
+  packages/sim:
+    dependencies:
+      '@hashwitness/agent':
+        specifier: workspace:*
+        version: link:../agent
+      '@hashwitness/core':
+        specifier: workspace:*
+        version: link:../core
+      '@hashwitness/fake-mirror':
+        specifier: workspace:*
+        version: link:../fake-mirror
 
   scripts:
     dependencies:

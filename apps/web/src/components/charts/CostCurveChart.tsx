@@ -3,7 +3,7 @@ import { useRef, useState, type PointerEvent } from "react";
 export interface CostPoint { scenario: number; bandit: number; baseline: number }
 
 // Geometry (SVG user units; the SVG scales to its container width).
-const W = 640, H = 280, M = { t: 16, r: 96, b: 36, l: 56 };
+const W = 640, H = 290, M = { t: 16, r: 96, b: 48, l: 56 };
 const PW = W - M.l - M.r, PH = H - M.t - M.b;
 
 /** Rounds the axis maximum up to 1, 2 or 5 × 10^k and returns 4 even ticks. */
@@ -56,9 +56,9 @@ export function CostCurveChart({ data }: { data: CostPoint[] }) {
             </g>
           ))}
           {xTicks.map((i) => (
-            <text key={i} className="chart-tick" x={x(i)} y={H - 12} textAnchor="middle">{data[i]!.scenario}</text>
+            <text key={i} className="chart-tick" x={x(i)} y={M.t + PH + 18} textAnchor="middle">{data[i]!.scenario}</text>
           ))}
-          <text className="chart-tick" x={M.l + PW / 2} y={H} textAnchor="middle" dominantBaseline="text-after-edge">scenario</text>
+          <text className="chart-tick" x={M.l + PW / 2} y={H - 2} textAnchor="middle">scenario</text>
 
           <path d={path("baseline")} className="series-baseline" fill="none" />
           <path d={path("bandit")} className="series-bandit" fill="none" />

@@ -178,3 +178,33 @@ Verdict rules (`packages/core/src/verify.ts`, deterministic, no LLM):
 - Chart colors: bandit = `--accent-hover`, baseline = `--text-muted` dashed. Validator (dataviz skill), dark surface
   `#1b1b38`: CVD ΔE 18.2, normal-vision ΔE 18.5, contrast ≥ 3:1 PASS; lightness-band FAIL on the neutral baseline is
   accepted because it is a neutral reference line, not a categorical hue; dash + direct labels add secondary encoding.
+
+## 14. M7 simulation + Thompson-sampling bandit (2026-11-13)
+
+`pnpm sim [--seed 42] [--scenarios 200]` → `.data/sim/metrics.json`, `scenarios.csv`, `costCurve.csv` (reproducible
+from the seed; tested). The verifier (`core.verifyCredential`, anchor on, k = 2) and the attack views
+(`fake-mirror.applyAttack`) are the real ones; only the world is simulated.
+
+**Assumptions (exported in metrics.json `config`)**: 5 simulated mirrors with costs 1/1/2/2/1, unreachable 1–10 %,
+benign lag (newest message missing) 2–10 %, lag persists for the whole verification (no retry catch-up);
+35 % of scenarios attacked, attacker = mirror-e (70 %) or mirror-b (30 %), attack type uniform; bandit probe rate 25 %,
+audit rate 10 %, Beta(1,1) prior, score = sampled reliability / cost. Baseline queries and probes every mirror.
+
+**Measured (seed 42, 200 scenarios)**:
+
+| | Bandit | Query-all |
+|---|---|---|
+| Queries per verification | 3.00 | 9.89 |
+| Cost units | 647 | 2774 (bandit −77 %) |
+| Accepted the attacker's lie | 0.0 % | 0.0 % |
+| Correct verdict | 100 % | 100 % |
+| Attacker exposed (flagged) | 43.3 % | 100 % |
+| False positives (benign scenario, a mirror flagged) | 12.1 % | 23.6 % |
+
+Confusion matrix (rule-based classifier on query-all evidence): tamper 21/21, replay 18/18, equivocation 21/21;
+benign 107/140, the other 33 benign scenarios (mirror lag) were labelled replay. Accuracy 84 %.
+
+Reading: with the consensus anchor neither strategy is ever fooled, so the bandit cuts cost by ~3/4 at no safety
+loss. The price is exposure: it learns to avoid the compromised mirrors, so it flags them less often (audit rate is
+the knob). Lag vs replay is ambiguous from a single verification; all false positives are lag flagged as stale.
+These figures depend on the assumed parameters above; they are not measurements of real Hedera mirrors.

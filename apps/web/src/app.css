@@ -86,7 +86,7 @@ h3 { font-size: var(--fs-body); margin: 0 0 0.5rem; }
 a { color: var(--accent-soft); }
 
 /* Metrics: stat tiles */
-.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: var(--space); }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: var(--space); }
 .tile { display: grid; gap: 0.25rem; padding: var(--space); border: 1px solid var(--border); border-radius: var(--radius-input); background: var(--surface-2); }
 .tile-label { color: var(--text-muted); font-weight: 600; }
 .tile-value { font-size: var(--fs-h2); font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }

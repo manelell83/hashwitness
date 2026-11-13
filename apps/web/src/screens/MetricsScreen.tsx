@@ -26,6 +26,7 @@ export function MetricsScreen() {
   }
 
   const saved = m.baseline.queries ? 1 - m.bandit.queries / m.baseline.queries : 0;
+  const costSaved = m.baseline.costUnits ? 1 - m.bandit.costUnits / m.baseline.costUnits : 0;
   return (
     <div className="stack">
       <section className="card">
@@ -38,17 +39,22 @@ export function MetricsScreen() {
           <div className="tile">
             <span className="tile-label">Queries used (bandit)</span>
             <span className="tile-value"><CountUp value={m.bandit.queries} /></span>
-            <span className="muted">vs {m.baseline.queries.toLocaleString()} query-all</span>
+            <span className="muted">vs {m.baseline.queries.toLocaleString()} query-all ({pct(saved)} fewer)</span>
           </div>
           <div className="tile">
             <span className="tile-label">Cost (bandit)</span>
             <span className="tile-value"><CountUp value={m.bandit.costUnits} /></span>
-            <span className="muted">units, {pct(saved)} fewer queries</span>
+            <span className="muted">units vs {m.baseline.costUnits.toLocaleString()} ({pct(costSaved)} less)</span>
           </div>
           <div className="tile">
-            <span className="tile-label">Detection rate</span>
+            <span className="tile-label">Accepted a lie</span>
+            <span className="tile-value">{pct(m.bandit.fooledRate)}</span>
+            <span className="muted">of attacks · query-all: {pct(m.baseline.fooledRate)}</span>
+          </div>
+          <div className="tile">
+            <span className="tile-label">Attacker exposed</span>
             <span className="tile-value">{pct(m.bandit.detectionRate)}</span>
-            <span className="muted">query-all: {pct(m.baseline.detectionRate)}</span>
+            <span className="muted">of attacks · query-all: {pct(m.baseline.detectionRate)}</span>
           </div>
           <div className="tile">
             <span className="tile-label">False-positive rate</span>

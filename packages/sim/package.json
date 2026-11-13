@@ -2,5 +2,12 @@
   "name": "@hashwitness/sim",
   "private": true,
   "type": "module",
-  "exports": { ".": "./src/index.ts" }
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@hashwitness/agent": "workspace:*",
+    "@hashwitness/core": "workspace:*",
+    "@hashwitness/fake-mirror": "workspace:*"
+  }
 }
