@@ -1,0 +1,9 @@
+{
+  "model": "openai/gpt-oss-20b",
+  "analysis": {
+    "attackType": "tamper",
+    "confidence": 0.95,
+    "explanation": "Mirror M5 reported a forged state (lastSequence 3, status ISSUED) while M1, M2, M4 agree on sequence 4 with status REVOKED. The differences list shows sequence 3 altered by M5 and sequence 4 missing from M3 and M5, confirming tampering. M3’s stale state is secondary.",
+    "recommendedAction": "Isolate mirror M5, verify its ledger integrity, replace or re‑synchronize it, and monitor all mirrors for similar anomalies. Ensure the consensus service is re‑validated after remediation."
+  }
+}

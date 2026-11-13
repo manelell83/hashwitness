@@ -1,0 +1,9 @@
+{
+  "model": "openai/gpt-oss-20b",
+  "analysis": {
+    "attackType": "equivocation",
+    "confidence": 0.95,
+    "explanation": "Mirror M5 reports split_view: status REVOKED to verifier but ISSUED to other clients. Differences show sequence 3 altered and 4 missing for other clients. This indicates M5 is equivocating, presenting divergent histories. The other mirrors (M1-M4) agree on sequence 4, so the anomaly is isolated to M5.",
+    "recommendedAction": "Isolate mirror M5, verify its logs, check for tampering, coordinate with operator to restore consistent view. Revoke or replace M5 until consistency is restored."
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "model": "openai/gpt-oss-20b",
+  "analysis": {
+    "attackType": "replay",
+    "confidence": 0.9,
+    "explanation": "M2 (lastSequence 2) and M4 (lastSequence 3) are stale, missing sequence 3 and 4. They report statusSeenByVerifier ISSUED (M2) and REVOKED (M4) but lack the latest messages, indicating a replay that hides the revocation. The other mirrors (M1, M3, M5) agree on REVOKED with lastSequence 4. This matches the replay definition.",
+    "recommendedAction": "Exclude M2 and M4 from the quorum, request fresh data from the agreeing mirrors, and consider blacklisting the stale mirrors to prevent future replay attacks."
+  }
+}

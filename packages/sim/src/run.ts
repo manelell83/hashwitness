@@ -1,4 +1,5 @@
-import { buildEvidence, classify, needsAnalysis } from "@hashwitness/agent";
+import { buildEvidence, classify, needsAnalysis, type Forensic } from "@hashwitness/agent";
+import type { VerificationResult } from "@hashwitness/core";
 import { ATTACK_LABELS, type AttackLabel, type MetricsReport, type StrategyStats } from "./metrics.ts";
 import { queryAll, ThompsonBandit, type Outcome } from "./strategies.ts";
 import { makeScenarios, type Scenario, type SimConfig } from "./world.ts";
@@ -38,8 +39,15 @@ function stats(outcomes: Outcome[], scenarios: Scenario[]): StrategyStats {
   };
 }
 
+/** Optional: the LLM agent evaluated on the first `limit` scenarios (query-all evidence), through its cache. */
+export interface LlmEval {
+  analyze: (r: VerificationResult) => Promise<Forensic | null>;
+  limit: number;
+  label: string;
+}
+
 /** Runs every scenario through both strategies. Deterministic for a given config (seeded). */
-export async function runSimulation(cfg: SimConfig, now = new Date()): Promise<{ report: MetricsReport; rows: Row[] }> {
+export async function runSimulation(cfg: SimConfig, now = new Date(), llm?: LlmEval): Promise<{ report: MetricsReport; rows: Row[] }> {
   const scenarios = makeScenarios(cfg);
   const bandit = new ThompsonBandit(cfg);
   const b: Outcome[] = [];
@@ -67,6 +75,29 @@ export async function runSimulation(cfg: SimConfig, now = new Date()): Promise<{
     };
   });
 
+  // LLM vs ground truth on the same first N scenarios, with the rule-based matrix on that subset for comparison.
+  // Answers that fell back to the rules are counted in `engine.fallback` and left out of the LLM matrix.
+  let confusionLlm: MetricsReport["confusionLlm"];
+  if (llm) {
+    const n = Math.min(llm.limit, scenarios.length);
+    const zero = () => ATTACK_LABELS.map(() => ATTACK_LABELS.map(() => 0));
+    const m = zero(), rules = zero();
+    const engine = { llm: 0, cache: 0, replay: 0, fallback: 0, notNeeded: 0 };
+    for (let i = 0; i < n; i++) {
+      const t = idx(scenarios[i]!.truth);
+      rules[t]![idx(rows[i]!.predicted)]!++;
+      const f = await llm.analyze(q[i]!.result);
+      if (!f) {
+        engine.notNeeded++; // every mirror agreed: nothing to explain, shown as benign_fault (same as the rules)
+        m[t]![idx("benign_fault")]!++;
+        continue;
+      }
+      engine[f.source]++;
+      if (f.source !== "fallback") m[t]![idx(f.attackType)]!++;
+    }
+    confusionLlm = { labels: [...ATTACK_LABELS], matrix: m, rulesMatrix: rules, classifier: llm.label, scenarios: n, engine };
+  }
+
   return {
     rows,
     report: {
@@ -78,6 +109,7 @@ export async function runSimulation(cfg: SimConfig, now = new Date()): Promise<{
       baseline: stats(q, scenarios),
       costCurve,
       confusion: { labels: [...ATTACK_LABELS], matrix, classifier: "rule-based classifier (agent fallback), on query-all evidence" },
+      ...(confusionLlm ? { confusionLlm } : {}),
       config: cfg,
     },
   };

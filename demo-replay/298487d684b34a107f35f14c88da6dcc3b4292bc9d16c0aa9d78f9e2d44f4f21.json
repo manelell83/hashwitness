@@ -1,0 +1,9 @@
+{
+  "model": "openai/gpt-oss-20b",
+  "analysis": {
+    "attackType": "replay",
+    "confidence": 0.9,
+    "explanation": "Mirror M5 is stale: lastSequence 2, statusSeenByVerifier ISSUED, while M1, M3, M4 report REVOKED at sequence 4. This indicates M5 is replaying an older history that hides the revocation. No equivocation or tampering detected; M2 is unreachable but does not affect the verdict.",
+    "recommendedAction": "Investigate M5’s sync status and network connectivity. Verify its ledger against other mirrors. If it cannot catch up, exclude it from the quorum until it returns to the latest sequence. Monitor for further stale reports."
+  }
+}

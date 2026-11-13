@@ -1,0 +1,9 @@
+{
+  "model": "openai/gpt-oss-20b",
+  "analysis": {
+    "attackType": "replay",
+    "confidence": 0.85,
+    "explanation": "Mirror M4 reports stale state with lastSequence 3 and missing sequence 4, while M1, M2, M3, and M5 agree on sequence 4. This indicates a replay attack where M4 serves an older history. No equivocation or tampering detected.",
+    "recommendedAction": "Investigate M4’s connectivity and configuration, verify its data integrity, and consider replacing or re‑syncing the mirror. Monitor for further stale reports."
+  }
+}

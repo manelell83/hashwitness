@@ -1,0 +1,9 @@
+{
+  "model": "openai/gpt-oss-20b",
+  "analysis": {
+    "attackType": "replay",
+    "confidence": 0.9,
+    "explanation": "Mirrors M2 and M5 report lastSequence 3 and are marked stale, missing sequence 4 which is present on M1, M3, M4. This indicates a replay attack where a mirror serves a shorter history hiding the latest message. All mirrors agree on status REVOKED, so no equivocation.",
+    "recommendedAction": "Investigate M2 and M5 for synchronization issues or network partitions. Re‑sync or replace these mirrors, and monitor for further stale reports to ensure consistency across the cluster."
+  }
+}

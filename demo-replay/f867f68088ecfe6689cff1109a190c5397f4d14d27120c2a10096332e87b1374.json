@@ -1,0 +1,9 @@
+{
+  "model": "openai/gpt-oss-20b",
+  "analysis": {
+    "attackType": "tamper",
+    "confidence": 0.95,
+    "explanation": "Mirror M5 is in state \"forged\" with lastSequence 3, missing sequence 4 and altering sequence 3. Mirrors M1-M4 agree on sequence 4 and status REVOKED. This indicates tampering by M5.",
+    "recommendedAction": "Block M5 from serving data, replace it with a healthy mirror, re-fetch the full history from M1-M4, and audit M5 logs for evidence of tampering."
+  }
+}

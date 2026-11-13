@@ -218,3 +218,21 @@ These figures depend on the assumed parameters above; they are not measurements 
 - **[TESTED in browser]** after `pnpm demo`: Attack Lab Tamper → naive Valid, HashWitness Revoked + Forged history + AI block.
 - `scripts/demo.md`: 4-minute script with timings, pre-flight checklist and fallbacks. `README.md`: problem, Mermaid
   architecture, Hedera usage and why, setup in 5 commands, measured results, honest limitations.
+
+## 16. Live LLM agent (finalization, 2026-11-13)
+
+- **[DOCS]** OpenRouter Chat Completions `POST https://openrouter.ai/api/v1/chat/completions`; structured outputs via
+  `response_format: {type: "json_schema", json_schema: {name, strict: true, schema}}`; `provider.require_parameters`
+  and `provider.sort` ("price" | "throughput" | "latency") documented in the provider-selection guide.
+- **[TESTED]** candidates (one call each on an offline tamper scenario, `pnpm llm:probe`):
+  `mistralai/mistral-nemo` ($0.029/$0.030 per M) valid answer in 3.4 s, then 3/3 timeouts at 5 s on the next run;
+  `openai/gpt-oss-20b` ($0.03/$0.13) at max_tokens 300: schema-valid but degraded text (reasoning eats the budget);
+  `nvidia/nemotron-3.5-super-vl:free`: timeout.
+- **[TESTED]** adopted `openai/gpt-oss-20b`, `LLM_MAX_TOKENS=1000`, `provider.sort: "throughput"`: 3/3 correct,
+  0.8 to 1.5 s (2.6 to 4.9 s without throughput routing).
+- **[TESTED]** live replay evidence (2 mirrors, k=1) was first labelled *equivocation*; the prompt now defines the
+  evidence fields and the rules' priority; 3/3 correct live afterwards. Cache keys include a prompt fingerprint.
+- **[TESTED]** validator rejects placeholder answers ("...", min 20 chars) seen once from gpt-oss-20b.
+- **[TESTED]** `pnpm sim:llm` (40 scenarios): 13 calls, 12 cache hits, 15 nothing-to-explain, 0 fallbacks; matrix
+  identical to the rules. Cost of that run $0.0018763; total spent $0.004588612 (OpenRouter `/api/v1/key` usage).
+- **[TESTED]** `DEMO_REPLAY=1`: the 3 demo attacks served from `demo-replay/` (source "replay"), no network.

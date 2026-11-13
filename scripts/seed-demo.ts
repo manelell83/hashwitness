@@ -3,9 +3,11 @@
 //   2. registry content: issue DIP-001, issue DIP-002, revoke DIP-001, issue DIP-003 (only if the topic is empty)
 //   3. simulation results for the Metrics screen (seeded, reproducible)
 //   pnpm demo:seed
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { TopicCreateTransaction } from "@hiero-ledger/sdk";
-import { credentialStatus, fetchTopicMessages, type RegistryEvent } from "@hashwitness/core";
+import { credentialStatus, fetchTopicMessages, type RegistryEvent, type VerificationResult } from "@hashwitness/core";
+import { agentConfigFromEnv, analyze } from "@hashwitness/agent";
 import { runSimulation } from "@hashwitness/sim/run";
 import { DEFAULT_SIM } from "@hashwitness/sim/world";
 import { canonicalJson, demoDiploma, env, operatorKey, PUBLIC_MIRROR, sha256Hex, submitMessage, testnetClient } from "./lib.ts";
@@ -64,10 +66,17 @@ if (messages.length === 0) {
   console.log(`✓ registry has the demo state (${messages.length} messages): DIP-001 revoked, DIP-002 and DIP-003 valid`);
 }
 
-// 3. Simulation results
-const { report } = await runSimulation(DEFAULT_SIM);
+// 3. Simulation results. The LLM matrix (first 40 scenarios) is rebuilt from the committed demo-replay/ recordings
+// of real runs (`pnpm sim:llm`): no network, no cost, same numbers every time.
+const agent = { ...agentConfigFromEnv(new URL("../", import.meta.url)), demoReplay: true, log: () => {} };
+const recorded = existsSync(agent.recordingsDir) ? readdirSync(agent.recordingsDir).filter((f) => f.endsWith(".json")) : [];
+const model = recorded.length ? (JSON.parse(readFileSync(join(agent.recordingsDir, recorded[0]!), "utf8")) as { model: string }).model : null;
+const llm = model ? { limit: 40, label: `LLM: ${model} (recorded answers), on query-all evidence`, analyze: (r: VerificationResult) => analyze(r, agent) } : undefined;
+const { report } = await runSimulation(DEFAULT_SIM, new Date(), llm);
 const out = new URL("../.data/sim/", import.meta.url);
 mkdirSync(out, { recursive: true });
 writeFileSync(new URL("metrics.json", out), JSON.stringify(report, null, 2));
 console.log(`✓ simulation: ${report.scenarios} scenarios (seed ${report.seed}) → .data/sim/metrics.json`);
+const e = report.confusionLlm?.engine;
+console.log(e ? `✓ LLM confusion matrix: ${report.confusionLlm!.scenarios} scenarios from recordings (${e.replay} recorded, ${e.fallback} missing → excluded)` : "· no LLM recordings: Metrics shows the rule-based matrix only");
 console.log("\nReady. Start the demo with: pnpm dev   (then open http://localhost:5173)");

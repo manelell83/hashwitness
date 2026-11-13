@@ -70,3 +70,29 @@ describe("runSimulation", () => {
     expect(report.bandit.queries).toBeLessThan(report.baseline.queries);
   });
 });
+
+describe("LLM evaluation", () => {
+  it("scores the agent on the first N scenarios, separately from the rules and without touching verdicts", async () => {
+    const { buildEvidence, classify, needsAnalysis } = await import("@hashwitness/agent");
+    const seen: string[] = [];
+    // Stub agent: answers like the rules, except it calls one fallback (to check fallbacks are excluded).
+    const analyze = async (r: Parameters<typeof buildEvidence>[0]) => {
+      const { evidence } = buildEvidence(r);
+      if (!needsAnalysis(evidence)) return null;
+      seen.push(r.verdict);
+      const source = seen.length === 1 ? ("fallback" as const) : ("llm" as const);
+      return { ...classify(evidence), source, model: "stub", evidenceHash: "", agreesWithRules: true, mirrorAliases: {} };
+    };
+    const plain = await runSimulation(SMALL, NOW);
+    const { report } = await runSimulation(SMALL, NOW, { analyze, limit: 20, label: "LLM: stub" });
+    const c = report.confusionLlm!;
+    expect(c.scenarios).toBe(20);
+    expect(c.engine.llm + c.engine.fallback + c.engine.notNeeded).toBe(20);
+    expect(c.engine.fallback).toBe(1);
+    expect(c.matrix.flat().reduce((a, b) => a + b, 0)).toBe(19); // the fallback answer is left out
+    expect(c.rulesMatrix.flat().reduce((a, b) => a + b, 0)).toBe(20);
+    expect(isMetricsReport(report)).toBe(true);
+    const { confusionLlm: _omit, ...rest } = report;
+    expect(rest).toEqual(plain.report); // everything else, verdicts included, is unchanged
+  });
+});

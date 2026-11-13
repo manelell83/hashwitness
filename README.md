@@ -125,6 +125,10 @@ and the verdict stays **Revoked**, while an app trusting the attacker mirror sho
 Rule-based classifier on query-all evidence: tamper, replay and equivocation 100 % correct; 33 of 140 benign
 scenarios (mirror lag) labelled replay. Accuracy 84 %.
 
+**AI agent** (`pnpm sim:llm`, `openai/gpt-oss-20b`, first 40 scenarios, 0 fallbacks): tamper 5/5, replay 7/7,
+equivocation 6/6, benign 15/22 (7 lag cases labelled replay). Accuracy 83 %, identical to the rules on the same
+scenarios. Total OpenRouter spend for all model tests, live demo runs and this evaluation: **$0.0046**.
+
 ## Honest limitations
 
 - **Real vs simulated mirrors.** Only **one** keyless public testnet mirror exists (`testnet.mirrornode.hedera.com`);
@@ -137,9 +141,11 @@ scenarios (mirror lag) labelled replay. Accuracy 84 %.
 - **Equivocation** is caught only when the probe looks like a different client to the mirror. A mirror that splits
   views by IP address would need probes from other network locations.
 - **Lag vs replay** cannot be told apart in a single verification; benign lag is the source of all false positives.
-- **AI agent:** the live LLM path is unit-tested against a mocked API but **was not run against OpenRouter** (no key
-  configured). No `DEMO_REPLAY` recordings exist yet, so replay mode falls back to the rule-based classifier,
-  labelled as such. Recordings are only ever copied from real LLM runs (`pnpm agent:record`).
+- **AI agent:** runs live on OpenRouter with `openai/gpt-oss-20b` (chosen after testing 3 models; see NOTES.md §16).
+  On the first 40 simulated scenarios it matches the rule-based classifier exactly, so it adds explanations, not
+  accuracy; like the rules, it labels benign mirror lag as replay. A 5 s timeout and an invalid answer both fall back to
+  the rules, and the UI says which engine answered. `demo-replay/` holds real recorded answers for the 3 demo attacks
+  and the simulation (`DEMO_REPLAY=1`); recordings are only ever copied from real runs (`pnpm agent:record`).
 - **Simulation figures** depend on assumed parameters (costs, failure and attack rates); they are not measurements of
   real Hedera mirrors.
 - **Credential model** is minimal: a SHA-256 of a JSON document, issuer = Hedera account. No W3C Verifiable

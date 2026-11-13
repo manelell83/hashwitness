@@ -1,0 +1,9 @@
+{
+  "model": "openai/gpt-oss-20b",
+  "analysis": {
+    "attackType": "replay",
+    "confidence": 0.9,
+    "explanation": "Mirror M5 reports lastSequence 2 and status ISSUED, missing sequences 3 and 4, while M1–M4 agree on sequence 4 and status REVOKED. This stale view hides the latest messages, indicating a replay attack. No equivocation or tampering detected.",
+    "recommendedAction": "Exclude M5 from the quorum, replace or repair it, and re‑run verification with the remaining mirrors to ensure consensus on the revoked status."
+  }
+}

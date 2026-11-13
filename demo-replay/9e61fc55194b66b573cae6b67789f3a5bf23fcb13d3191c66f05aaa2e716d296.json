@@ -1,0 +1,9 @@
+{
+  "model": "openai/gpt-oss-20b",
+  "analysis": {
+    "attackType": "equivocation",
+    "confidence": 0.95,
+    "explanation": "Mirror M2 reports split_view: to verifier status REVOKED, to other clients status ISSUED. Differences show altered seq3 and missing seq4. This indicates equivocation. Other mirrors agree.",
+    "recommendedAction": "Isolate M2, verify logs, request audit, consider revoking its trust, notify network, monitor for further anomalies."
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "model": "openai/gpt-oss-20b",
+  "analysis": {
+    "attackType": "equivocation",
+    "confidence": 0.9,
+    "explanation": "Mirror M5 reported split_view: it shows a different history to other clients (statusSeenByOtherClients='ISSUED') while verifier sees REVOKED. This indicates equivocation. Additionally, mirror M2 is stale (lastSequence 3) missing the latest sequence 4, but equivocation takes priority. The differences list shows sequence 3 altered by M5 for other clients and sequence 4 missing by M2 and M5 to other clients. Thus the anomaly is equivocation.",
+    "recommendedAction": "Investigate mirror M5 for potential malicious behavior, isolate it from the network, and verify its logs. Revoke its trust if evidence of tampering persists. Monitor M2 for availability issues and ensure it catches up to sequence 4. Consider adding additional mirrors to increase quorum."
+  }
+}

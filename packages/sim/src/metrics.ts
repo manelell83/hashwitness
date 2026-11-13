@@ -25,6 +25,11 @@ export interface MetricsReport {
   costCurve: { scenario: number; bandit: number; baseline: number }[];
   /** Agent classification vs ground truth. matrix[actual][predicted], indices follow `labels`. */
   confusion: { labels: AttackLabel[]; matrix: number[][]; classifier: string };
+  /** Optional: LLM agent on the first `scenarios` scenarios. matrix excludes fallback answers (counted in engine). */
+  confusionLlm?: {
+    labels: AttackLabel[]; matrix: number[][]; rulesMatrix: number[][]; classifier: string; scenarios: number;
+    engine: { llm: number; cache: number; replay: number; fallback: number; notNeeded: number };
+  };
   /** The simulation's assumptions (mirror pool, attack rates, bandit parameters), exported with the results. */
   config?: unknown;
 }

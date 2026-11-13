@@ -1,0 +1,9 @@
+{
+  "model": "openai/gpt-oss-20b",
+  "analysis": {
+    "attackType": "replay",
+    "confidence": 0.9,
+    "explanation": "Mirror M5 reports lastSequence 3 while others report 4, indicating a stale view that hides the latest message (sequence 4). The state is \"stale\" and no equivocation or tampering is present. This is a replay attack where M5 serves an older history.",
+    "recommendedAction": "Exclude M5 from quorum calculations, force a full sync or restart of M5, and monitor for repeated stale responses. Ensure the remaining mirrors maintain consistent state before re‑establishing quorum."
+  }
+}

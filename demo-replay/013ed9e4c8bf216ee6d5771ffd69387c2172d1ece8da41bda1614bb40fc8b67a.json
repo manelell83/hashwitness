@@ -1,0 +1,9 @@
+{
+  "model": "openai/gpt-oss-20b",
+  "analysis": {
+    "attackType": "replay",
+    "confidence": 0.9,
+    "explanation": "M2 and M5 are stale: M2 lastSequence 3 missing seq4, M5 lastSequence 2 missing seq3,4. Quorum has 3 agree mirrors (M1,M3,M4) with REVOKED status. This indicates a replay attack where stale mirrors hide latest messages.",
+    "recommendedAction": "Investigate M2 and M5 for sync issues, re‑sync or replace them, and monitor for further stale behavior."
+  }
+}

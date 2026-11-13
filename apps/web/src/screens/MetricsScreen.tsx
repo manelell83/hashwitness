@@ -74,6 +74,18 @@ export function MetricsScreen() {
         <p className="muted">Classifier: {m.confusion.classifier}</p>
         <ConfusionMatrix labels={m.confusion.labels} matrix={m.confusion.matrix} />
       </section>
+
+      {m.confusionLlm && (
+        <section className="card">
+          <h2>AI agent classification</h2>
+          <p className="muted">
+            Engine: {m.confusionLlm.classifier}. First {m.confusionLlm.scenarios} scenarios:{" "}
+            {m.confusionLlm.engine.notNeeded} with nothing to explain (counted as benign),{" "}
+            {m.confusionLlm.engine.fallback} fell back to the rules (left out). The AI never changes a verdict.
+          </p>
+          <ConfusionMatrix labels={m.confusionLlm.labels} matrix={m.confusionLlm.matrix} />
+        </section>
+      )}
       <p className="muted">Generated {new Date(m.generatedAt).toLocaleString()}.</p>
     </div>
   );

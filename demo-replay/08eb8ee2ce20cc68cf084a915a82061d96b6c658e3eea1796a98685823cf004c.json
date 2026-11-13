@@ -1,0 +1,9 @@
+{
+  "model": "openai/gpt-oss-20b",
+  "analysis": {
+    "attackType": "replay",
+    "confidence": 0.9,
+    "explanation": "Mirror M2 reports state \"stale\" with lastSequence 3, missing sequence 4, while M1, M3, M4, M5 all agree on lastSequence 4 and status REVOKED. The single stale mirror indicates a replay attack where it serves an older history hiding the latest message.",
+    "recommendedAction": "Exclude M2 from the consensus view, re-query it for the missing sequence, and flag it for further investigation. Continue using the other four mirrors for verification."
+  }
+}
