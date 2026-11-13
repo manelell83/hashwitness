@@ -95,16 +95,23 @@ git clone https://github.com/manelell83/hashwitness.git && cd hashwitness
 npm install -g pnpm@10
 pnpm install
 cp .env.example .env        # then set OPERATOR_ID and OPERATOR_KEY
-pnpm demo                   # seeds topics + registry + simulation, starts everything
+pnpm demo                   # seeds topics + registry + simulation + offline cache, prints URLs, starts everything
 ```
 
 Open http://localhost:5173. `pnpm demo` is idempotent; run it before every demo. Demo script: [`scripts/demo.md`](scripts/demo.md).
 
-Optional in `.env`: `HGRAPH_API_KEY`, `VALIDATIONCLOUD_API_KEY`, `ARKHIA_API_KEY` (more real mirrors);
-`LLM_API_KEY` + `LLM_MODEL` (live AI analysis; otherwise the rule-based fallback is used and labelled as such).
+**Offline backup:** after one online `pnpm demo`, `pnpm demo:offline` runs with no network at all: mirror responses
+and the consensus anchor come from the cache, AI answers from `demo-replay/` (real recorded LLM outputs), nothing is
+published, and a banner says so. All checks, including the attacks, still run for real on that data.
 
-Other commands: `pnpm test` (unit + HTTP tests), `pnpm typecheck`, `pnpm verify DIP-001 --fake --k 1`,
-`pnpm attack tamper|replay|equivocate|honest`, `pnpm audit-log`, `pnpm sim --seed 42 --scenarios 200`.
+Optional in `.env`: `HGRAPH_API_KEY` (second real mirror, free key), `VALIDATIONCLOUD_API_KEY`, `ARKHIA_API_KEY`,
+or any provider via `MIRROR_n_URL` / `MIRROR_n_KEY`; `LLM_API_KEY` + `LLM_MODEL` + `LLM_MAX_TOKENS` (live AI
+analysis; otherwise the rule-based fallback answers and the UI labels it).
+
+Other commands: `pnpm test` (unit + HTTP tests), `pnpm typecheck`, `pnpm mirrors:check` (one real request per mirror),
+`pnpm llm:probe <model>` (one real LLM call per attack), `pnpm verify DIP-001 --fake --k 1`,
+`pnpm attack tamper|replay|equivocate|honest`, `pnpm audit-log`, `pnpm sim --seed 42 --scenarios 200`,
+`pnpm sim:llm` (AI confusion matrix on 40 scenarios, then records the answers).
 
 ## Results
 
@@ -129,7 +136,12 @@ scenarios (mirror lag) labelled replay. Accuracy 84 %.
 equivocation 6/6, benign 15/22 (7 lag cases labelled replay). Accuracy 83 %, identical to the rules on the same
 scenarios. Total OpenRouter spend for all model tests, live demo runs and this evaluation: **$0.0046**.
 
-## Honest limitations
+## Known limitations
+
+In short: **real** = Hedera testnet, the consensus-node anchor, the Hedera public mirror, Hgraph, and the LLM calls;
+**simulated** = the attacker mirror (a local proxy that lies on purpose) and the 5 mirrors of the cost simulation;
+**not done** = verifying mirror data against signed record files / state proofs.
+
 
 - **Real vs simulated mirrors.** The live demo uses **two real testnet mirrors**, the keyless Hedera public mirror
   (`testnet.mirrornode.hedera.com`) and **Hgraph** (free API key), plus **one local attacker mirror** (a proxy in front
@@ -153,6 +165,11 @@ scenarios. Total OpenRouter spend for all model tests, live demo runs and this e
   Credentials, DIDs or holder signatures. Reports are stored locally only.
 - **PoC hardening:** testnet only; the fake mirror's admin endpoint and the API have no authentication and bind to
   localhost; no rate limiting; the running-hash implementation is verified empirically, not formally.
+- **Future work: record-file signature verification.** HashWitness trusts the consensus node it queries for the anchor
+  and checks mirror data against it. It does not yet verify consensus nodes' signatures on record files (or state
+  proofs), which would make a single mirror's answer verifiable on its own, without a quorum or a live node query.
+- **Offline mode** (`pnpm demo:offline`) replays data cached during the last online run: it shows how the checks work,
+  not the current state of the ledger, and it publishes nothing. The UI says so with a banner.
 
 ## Design
 
