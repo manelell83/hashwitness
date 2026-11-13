@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
-import { AccountId, Client, PrivateKey } from "@hiero-ledger/sdk";
-import type { MirrorConfig } from "@hashwitness/core";
+import { AccountId, Client, PrivateKey, TopicInfoQuery } from "@hiero-ledger/sdk";
+import type { Anchor, MirrorConfig } from "@hashwitness/core";
 
 export function env(name: string): string {
   const v = process.env[name];
@@ -18,8 +18,36 @@ export function testnetClient(): Client {
   return Client.forTestnet().setOperator(AccountId.fromString(env("OPERATOR_ID")), operatorKey());
 }
 
-/** M1 reads through the keyless public mirror only. Quorum over several mirrors arrives in M2. */
 export const PUBLIC_MIRROR: MirrorConfig = { name: "hedera-public", baseUrl: "https://testnet.mirrornode.hedera.com" };
+
+/** Real mirrors: the public one, plus each keyed provider whose key is in .env. */
+export function realMirrors(): MirrorConfig[] {
+  const out = [PUBLIC_MIRROR];
+  const k = process.env;
+  // [DOCS] https://docs.hgraph.com/overview/endpoints
+  if (k.HGRAPH_API_KEY) out.push({ name: "hgraph", baseUrl: "https://hedera-testnet.hgraph.com", headers: { "x-api-key": k.HGRAPH_API_KEY } });
+  // UNVERIFIED: key as path segment after /v1/; confirm against the Validation Cloud dashboard.
+  if (k.VALIDATIONCLOUD_API_KEY) out.push({ name: "validationcloud", baseUrl: `https://testnet.hedera.validationcloud.io/v1/${k.VALIDATIONCLOUD_API_KEY}` });
+  // UNVERIFIED: header name; confirm against the Arkhia dashboard.
+  if (k.ARKHIA_API_KEY) out.push({ name: "arkhia", baseUrl: "https://pool.arkhia.io/hedera/testnet", headers: { "x-api-key": k.ARKHIA_API_KEY } });
+  return out;
+}
+
+export const FAKE_MIRROR: MirrorConfig = {
+  name: "fake-mirror (attacker)",
+  baseUrl: process.env.FAKE_MIRROR_URL ?? "http://127.0.0.1:5551",
+};
+
+/** Topic head straight from a consensus node: the anchor no mirror can fake. */
+export async function readAnchor(topicId: string): Promise<Anchor> {
+  const client = testnetClient();
+  try {
+    const info = await new TopicInfoQuery().setTopicId(topicId).execute(client);
+    return { sequence: info.sequenceNumber.toNumber(), runningHash: Buffer.from(info.runningHash).toString("base64") };
+  } finally {
+    client.close();
+  }
+}
 
 /** Deterministic JSON: keys sorted recursively, no whitespace. */
 export function canonicalJson(v: unknown): string {

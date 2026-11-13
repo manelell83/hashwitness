@@ -10,7 +10,10 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "topics:create": "tsx --env-file=.env scripts/create-topics.ts",
     "credential": "tsx --env-file=.env scripts/credential.ts",
-    "status": "tsx --env-file=.env scripts/status.ts"
+    "status": "tsx --env-file=.env scripts/status.ts",
+    "verify": "tsx --env-file=.env scripts/verify.ts",
+    "attack": "tsx scripts/attack.ts",
+    "fake-mirror": "tsx packages/fake-mirror/src/server.ts"
   },
   "devDependencies": {
     "@types/node": "26.6.6",

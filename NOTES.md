@@ -89,3 +89,30 @@ A real trust anchor would be the latest `(sequenceNumber, runningHash)` read **d
   chain head (seq 3) == `TopicInfoQuery` anchor from a consensus node.
 - Consequence for M2: the consensus node can be a few seconds ahead of mirrors right after a submit. A mirror behind
   the anchor whose chain is a valid prefix should be reported as *lagging*, not lying; the verifier should retry briefly.
+
+## 9. M2 quorum verifier + fake mirror (2026-11-13)
+
+Registry now: seq 1 issue DIP-001, seq 2 issue DIP-002, seq 3 revoke DIP-001, seq 4 issue DIP-003
+(DIP-003 is issued *after* the revoke so a dropped revoke shifts later sequence numbers: the tamper shows as
+`forged`, not merely `stale`).
+
+**[TESTED] on testnet**, mirrors = hedera-public + local fake mirror, anchor from `TopicInfoQuery`, `--k 1`:
+
+| Attack | Fake mirror state | Naive single-mirror app says | HashWitness verdict | Diff |
+|---|---|---|---|---|
+| honest | agree | REVOKED | REVOKED | – |
+| tamper drop-revoke (re-chained, valid chain) | forged | ISSUED | REVOKED | seq 3 altered, seq 4 missing |
+| tamper alter-body (re-chained) | forged | ISSUED | REVOKED | seq 3, 4 altered |
+| replay (hide 2) | stale | ISSUED | REVOKED | seq 3, 4 missing |
+| equivocate (truth to verifier only) | split_view | ISSUED | REVOKED | seq 3, 4 differ for "(to other clients)" |
+
+With the default quorum (2 of 2) the same tamper gives `INCONSISTENT`: one honest mirror is not a quorum of 2.
+That is correct behaviour, and why the keyed providers matter.
+
+Verdict rules (`packages/core/src/verify.ts`, deterministic, no LLM):
+- `UNREACHABLE` if fewer than k mirrors answer; `INCONSISTENT` if fewer than k mirrors fully agree, or on a tie.
+- Otherwise the agreeing view decides: `VALID`, `REVOKED`, or `NOT_FOUND` (credential never issued, **added by us,
+  not in the original spec**).
+- With an anchor, only views reaching the anchor's running hash can be the reference. Liars can then *block* a
+  verdict but never *fake* one. Without an anchor, a colluding majority wins (tested, documented limitation).
+- Equivocation needs the split-view probe (a second request as an anonymous client); it doubles queries.
