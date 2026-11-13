@@ -1,0 +1,51 @@
+# Publishes the submission (deck, PDF, demo video) to GitHub Pages:
+#   https://manelell83.github.io/hashwitness/          -> the deck
+#   https://manelell83.github.io/hashwitness/HashWitness-demo.mp4
+# One-time setup (repository owner): Settings > Pages > Build and deployment > Source: "GitHub Actions".
+# Pattern from the official docs: "Using custom workflows with GitHub Pages".
+name: Deploy submission to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths: ["submission/**", ".github/workflows/pages.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Assemble site (only the public deliverables, not the build tooling)
+        run: |
+          mkdir -p _site
+          cp submission/HashWitness-DigiHacks.html _site/index.html
+          cp submission/HashWitness-DigiHacks.html submission/HashWitness-DigiHacks.pdf submission/HashWitness-demo.mp4 _site/
+          touch _site/.nojekyll
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
