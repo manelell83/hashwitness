@@ -91,7 +91,7 @@ Measured costs on testnet: one attestation message ≈ **0.0053 ℏ (≈ $0.0003
 Requires Node 20+ and a free testnet account from https://portal.hedera.com/.
 
 ```bash
-git clone <repo-url> hashwitness && cd hashwitness
+git clone https://github.com/manelell83/hashwitness.git && cd hashwitness
 npm install -g pnpm@10
 pnpm install
 cp .env.example .env        # then set OPERATOR_ID and OPERATOR_KEY
