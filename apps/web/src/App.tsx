@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import { api, type Config } from "./api.ts";
 import { AttackLabScreen } from "./screens/AttackLabScreen.tsx";
+import { AuditLogScreen } from "./screens/AuditLogScreen.tsx";
+import { MetricsScreen } from "./screens/MetricsScreen.tsx";
 import { VerifyScreen } from "./screens/VerifyScreen.tsx";
 
-type Screen = "verify" | "lab";
+type Screen = "verify" | "lab" | "audit" | "metrics";
 const SCREENS: { id: Screen; label: string }[] = [
   { id: "verify", label: "Verify" },
   { id: "lab", label: "Attack Lab" },
+  { id: "audit", label: "Audit log" },
+  { id: "metrics", label: "Metrics" },
 ];
 
 export function App() {
@@ -53,6 +57,8 @@ export function App() {
         {error && <p className="error" role="alert">{error}</p>}
         {screen === "verify" && <VerifyScreen />}
         {screen === "lab" && config && <AttackLabScreen config={config} />}
+        {screen === "audit" && <AuditLogScreen />}
+        {screen === "metrics" && <MetricsScreen />}
       </main>
     </>
   );

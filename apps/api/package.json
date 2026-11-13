@@ -9,6 +9,7 @@
     "@hashwitness/agent": "workspace:*",
     "@hashwitness/core": "workspace:*",
     "@hashwitness/scripts": "workspace:*",
+    "@hashwitness/sim": "workspace:*",
     "express": "5.3.0"
   },
   "devDependencies": {

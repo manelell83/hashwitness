@@ -162,3 +162,19 @@ Verdict rules (`packages/core/src/verify.ts`, deterministic, no LLM):
 - The analysis is part of the hashed report: **[TESTED]** attestation #12 (DIP-001, equivocation) → stored report
   contains `forensic` (source: fallback), reportHash matches.
 - **[UNVERIFIED]** live OpenRouter call: waiting for `LLM_API_KEY` + `LLM_MODEL`.
+
+## 13. M6 audit log + metrics screens (2026-11-13)
+
+- **Audit log** (`GET /api/audit`): reads the attestation topic through the public mirror, verifies its running-hash
+  chain, and re-hashes each locally stored report (match / EDITED / not stored). Polls every 5 s.
+  **[TESTED in browser]** 12 entries, all "matches"; attestation #13 published from the CLI while the screen was
+  open appeared on top with `.is-new` (animation `log-in`); older entries did not.
+- **Metrics** (`GET /api/metrics`): serves `.data/sim/metrics.json` written by M7, shape-checked against
+  `packages/sim/src/metrics.ts` (`MetricsReport`). 404 until then: the screen says "run pnpm sim".
+  **[TESTED in browser]** empty state. **Charts with real data: not yet rendered (no simulation results exist).**
+- Charts are isolated components with props only: `CostCurveChart` (one y-axis, crosshair + tooltip, legend + direct
+  labels, data table), `ConfusionMatrix` (single-hue accent fill by row share, values always printed), `CountUp`
+  (motion moment 3, once on mount, skipped under reduced motion).
+- Chart colors: bandit = `--accent-hover`, baseline = `--text-muted` dashed. Validator (dataviz skill), dark surface
+  `#1b1b38`: CVD ΔE 18.2, normal-vision ΔE 18.5, contrast ≥ 3:1 PASS; lightness-band FAIL on the neutral baseline is
+  accepted because it is a neutral reference line, not a categorical hue; dash + direct labels add secondary encoding.

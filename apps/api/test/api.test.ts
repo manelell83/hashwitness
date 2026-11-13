@@ -7,6 +7,8 @@ const deps: ApiDeps = {
   config: () => ({ mirrors: ["hedera-public"], attackerMirror: "fake", k: 1, registryTopic: "0.0.1", attestationTopic: "0.0.2" }),
   verify: vi.fn(async () => ({ result: { verdict: "VALID" } as never, forensic: null, attestation: null })),
   naive: vi.fn(async (_id, mirror) => ({ mirror, status: "ISSUED" as const, lastSequence: 4, latencyMs: 1 })),
+  audit: async () => ({ topicId: "0.0.2", chainValid: true, entries: [] }),
+  metrics: async () => null,
   getAttackMode: async () => ({ mode: "honest" }),
   setAttackMode: async () => { throw new Error("secret-ish internal detail"); },
 };
@@ -40,6 +42,13 @@ describe("api", () => {
   it("defaults the naive app to the attacker mirror", async () => {
     await post("/api/naive", { credentialId: "DIP-001", mirror: "anything-else" });
     expect(deps.naive).toHaveBeenLastCalledWith("DIP-001", "attacker");
+  });
+
+  it("serves the audit log, and a clear 404 while no simulation has run", async () => {
+    expect(await (await fetch(`${base}/api/audit`)).json()).toEqual({ topicId: "0.0.2", chainValid: true, entries: [] });
+    const m = await fetch(`${base}/api/metrics`);
+    expect(m.status).toBe(404);
+    expect((await m.json()).error).toContain("pnpm sim");
   });
 
   it("returns a generic error without internal details", async () => {

@@ -1,13 +1,28 @@
 // HTTP API for the web demo. Holds the Hedera operator key server-side; the browser never sees it.
 // Dependencies are injected so routes and input validation can be tested without network access.
 import express, { type Request, type Response } from "express";
-import type { CredentialStatus, VerificationResult } from "@hashwitness/core";
+import type { Attestation, CredentialStatus, VerificationResult } from "@hashwitness/core";
+import type { MetricsReport } from "@hashwitness/sim";
 import type { Forensic } from "@hashwitness/agent";
 
 export interface VerifyOutcome {
   result: VerificationResult;
   forensic: Forensic | null;
   attestation: { sequence: number; reportHash: string; transactionUrl: string } | null;
+}
+
+export interface AuditRow {
+  sequence: number;
+  consensusTimestamp: string;
+  explorerUrl: string;
+  attestation: Attestation;
+  /** Does the locally stored report still hash to the value anchored on HCS? */
+  reportCheck: "match" | "edited" | "not_stored";
+}
+export interface AuditOutcome {
+  topicId: string;
+  chainValid: boolean;
+  entries: AuditRow[];
 }
 
 export interface NaiveOutcome {
@@ -22,6 +37,10 @@ export interface ApiDeps {
   verify: (credentialId: string, opts: { includeAttacker: boolean }) => Promise<VerifyOutcome>;
   /** What an app that trusts ONE mirror would conclude (no quorum, no chain check, no anchor). */
   naive: (credentialId: string, mirror: "attacker" | "public") => Promise<NaiveOutcome>;
+  /** Attestations read back from the HCS attestation topic, newest first. */
+  audit: () => Promise<AuditOutcome>;
+  /** Simulation results, or null if `pnpm sim` has not been run yet. */
+  metrics: () => Promise<MetricsReport | null>;
   getAttackMode: () => Promise<unknown>;
   setAttackMode: (body: unknown) => Promise<{ status: number; body: unknown }>;
 }
@@ -67,6 +86,24 @@ export function createApi(deps: ApiDeps) {
       res.json(await deps.naive(id, mirror));
     } catch (e) {
       fail(res, "naive read", e);
+    }
+  });
+
+  app.get("/api/audit", async (_req, res) => {
+    try {
+      res.json(await deps.audit());
+    } catch (e) {
+      fail(res, "audit log", e);
+    }
+  });
+
+  app.get("/api/metrics", async (_req, res) => {
+    try {
+      const m = await deps.metrics();
+      if (m) res.json(m);
+      else res.status(404).json({ error: "no metrics yet: run pnpm sim" });
+    } catch (e) {
+      fail(res, "metrics", e);
     }
   });
 

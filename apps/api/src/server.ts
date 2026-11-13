@@ -1,5 +1,9 @@
-import { credentialStatus, fetchTopicMessages, verifyCredential, CLIENT_HEADER } from "@hashwitness/core";
-import { env, FAKE_MIRROR, publishAttestation, readAnchor, realMirrors } from "@hashwitness/scripts/lib";
+import { existsSync, readFileSync } from "node:fs";
+import {
+  auditEntries, credentialStatus, fetchTopicMessages, reportHash, verifyChain, verifyCredential, CLIENT_HEADER, type Report,
+} from "@hashwitness/core";
+import { isMetricsReport } from "@hashwitness/sim";
+import { env, FAKE_MIRROR, publishAttestation, readAnchor, realMirrors, REPORTS_DIR } from "@hashwitness/scripts/lib";
 import { agentConfigFromEnv, analyze } from "@hashwitness/agent";
 import { createApi } from "./app.ts";
 
@@ -42,6 +46,33 @@ const app = createApi({
       lastSequence: r.messages.at(-1)?.sequenceNumber ?? 0,
       latencyMs: r.latencyMs,
     };
+  },
+
+  async audit() {
+    const topicId = env("ATTESTATION_TOPIC_ID");
+    const { messages } = await fetchTopicMessages(real[0]!, topicId);
+    return {
+      topicId,
+      chainValid: verifyChain(messages).ok,
+      entries: auditEntries(messages, issuer).slice(0, 50).map((e) => {
+        const file = new URL(`${e.attestation.reportHash}.json`, REPORTS_DIR);
+        const reportCheck = !existsSync(file)
+          ? ("not_stored" as const)
+          : reportHash(JSON.parse(readFileSync(file, "utf8")) as Report) === e.attestation.reportHash ? ("match" as const) : ("edited" as const);
+        return {
+          sequence: e.sequence, consensusTimestamp: e.consensusTimestamp, attestation: e.attestation, reportCheck,
+          explorerUrl: `https://hashscan.io/testnet/transaction/${e.consensusTimestamp}`,
+        };
+      }),
+    };
+  },
+
+  async metrics() {
+    const file = new URL("../../../.data/sim/metrics.json", import.meta.url);
+    if (!existsSync(file)) return null;
+    const m: unknown = JSON.parse(readFileSync(file, "utf8"));
+    if (!isMetricsReport(m)) throw new Error("metrics.json has an unexpected shape");
+    return m;
   },
 
   async getAttackMode() {

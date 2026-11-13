@@ -14,10 +14,11 @@ const VIEW: Record<Verdict, { icon: string; word: string; cls: string }> = {
 export const statusAsVerdict = (s: CredentialStatus): Verdict =>
   s === "ISSUED" ? "VALID" : s === "REVOKED" ? "REVOKED" : "NOT_FOUND";
 
-export function VerdictBadge({ verdict, revealed = false }: { verdict: Verdict; revealed?: boolean }) {
+export function VerdictBadge({ verdict, revealed = false, size = "large" }: { verdict: Verdict; revealed?: boolean; size?: "large" | "small" }) {
   const v = VIEW[verdict];
   return (
-    <div className={`verdict ${v.cls}${revealed ? " is-revealed" : ""}`} role="status" aria-live="polite">
+    <div className={`verdict ${v.cls}${revealed ? " is-revealed" : ""}${size === "small" ? " verdict-small" : ""}`}
+      role={size === "large" ? "status" : undefined} aria-live={size === "large" ? "polite" : undefined}>
       <span aria-hidden="true">{v.icon}</span>
       <span>{v.word}</span>
     </div>
