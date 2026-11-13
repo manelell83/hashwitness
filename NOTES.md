@@ -236,3 +236,13 @@ These figures depend on the assumed parameters above; they are not measurements 
 - **[TESTED]** `pnpm sim:llm` (40 scenarios): 13 calls, 12 cache hits, 15 nothing-to-explain, 0 fallbacks; matrix
   identical to the rules. Cost of that run $0.0018763; total spent $0.004588612 (OpenRouter `/api/v1/key` usage).
 - **[TESTED]** `DEMO_REPLAY=1`: the 3 demo attacks served from `demo-replay/` (source "replay"), no network.
+
+## 17. More real mirrors (finalization, 2026-11-13)
+
+- **[TESTED]** Hgraph testnet with a free key (`x-api-key`): `pnpm mirrors:check` 4 msgs, chain valid, head matches
+  the consensus anchor (628 to 764 ms). 4 back-to-back verifications (each with a split-view probe): no 429.
+- **[TESTED]** the same key on Validation Cloud and Arkhia: HTTP 401 (expected, it is an Hgraph key); lines commented
+  out in `.env` so the default quorum (majority of real mirrors) stays reachable.
+- **[TESTED]** live with hedera-public + hgraph + attacker: honest VALID (k=2, 2/2 agree); tamper / replay /
+  equivocate all REVOKED with the attacker flagged forged / stale / split_view; LLM label correct and agreeing.
+- Generic `MIRROR_n_URL/_KEY/_HEADER/_NAME` env vars added for any other provider.

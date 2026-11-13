@@ -1,0 +1,9 @@
+{
+  "model": "openai/gpt-oss-20b",
+  "analysis": {
+    "attackType": "equivocation",
+    "confidence": 0.95,
+    "explanation": "Mirror M3 shows split_view: it reports REVOKED to verifier but ISSUED to other clients, with altered seq 3 and missing seq 4. M1 and M2 agree on seq 4. This indicates M3 is presenting different histories to different clients, i.e., equivocation.",
+    "recommendedAction": "Isolate mirror M3, audit its logs for tampering, verify its chain integrity, and replace or reconfigure it. Notify stakeholders of the equivocation and ensure all clients use only verified mirrors."
+  }
+}

@@ -39,7 +39,7 @@ flowchart LR
     REG[(HCS registry topic)]
     ATT[(HCS attestation topic)]
     M1[Mirror: Hedera public]
-    MK[Mirrors with API key<br/>Hgraph / Validation Cloud / Arkhia]
+    MK[Hgraph: real, free key<br/>Validation Cloud / Arkhia: wired, untested]
   end
   FAKE[fake-mirror<br/>attack proxy: tamper / replay / equivocate]
   subgraph HashWitness
@@ -131,11 +131,12 @@ scenarios. Total OpenRouter spend for all model tests, live demo runs and this e
 
 ## Honest limitations
 
-- **Real vs simulated mirrors.** Only **one** keyless public testnet mirror exists (`testnet.mirrornode.hedera.com`);
-  the live demo uses it plus the **local attacker mirror**. Hgraph, Validation Cloud and Arkhia are supported but need
-  free API keys; **none were configured during development**, and the Validation Cloud / Arkhia key format is
-  unverified. We cannot prove from outside that providers run independent importers. The simulation's 5 mirrors are
-  simulated.
+- **Real vs simulated mirrors.** The live demo uses **two real testnet mirrors**, the keyless Hedera public mirror
+  (`testnet.mirrornode.hedera.com`) and **Hgraph** (free API key), plus **one local attacker mirror** (a proxy in front
+  of the public mirror). Both real mirrors were checked with `pnpm mirrors:check`: same chain, ending at the consensus
+  anchor. Validation Cloud and Arkhia are wired in but **untested** (no working testnet key; their key format is
+  unverified). Without `HGRAPH_API_KEY`, the demo runs on one real mirror plus the attacker. We cannot prove from
+  outside that providers run independent importers. The simulation's 5 mirrors are simulated.
 - **Anchor trust.** The anchor comes from one consensus node via `TopicInfoQuery`. Querying several nodes would remove
   that single point. Without the anchor, a colluding majority of mirrors wins (tested and documented).
 - **Equivocation** is caught only when the probe looks like a different client to the mirror. A mirror that splits

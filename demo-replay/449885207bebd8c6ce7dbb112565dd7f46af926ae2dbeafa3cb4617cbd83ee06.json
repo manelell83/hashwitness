@@ -1,0 +1,9 @@
+{
+  "model": "openai/gpt-oss-20b",
+  "analysis": {
+    "attackType": "tamper",
+    "confidence": 0.95,
+    "explanation": "Mirror M3 reported a forged state: it shows lastSequence 3 and statusSeenByVerifier ISSUED, while M1 and M2 agree on lastSequence 4 and status REVOKED. Differences list shows sequence 3 altered and sequence 4 missing only on M3. This indicates tampering by M3, not equivocation or replay.",
+    "recommendedAction": "Flag mirror M3 for investigation, request detailed logs and audit trail, consider revoking its trust, and monitor other mirrors for similar anomalies."
+  }
+}
