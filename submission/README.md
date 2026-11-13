@@ -17,13 +17,22 @@ Hedera Cross Campus Challenge 2026, INPT Campus Edition.
 
 1. **Open:** double-click `HashWitness-DigiHacks.html` (Chrome or Edge recommended). No internet needed.
 2. **Fullscreen:** press **F** (press F or Esc to leave).
-3. **Navigate:** **→**, **Space** or **Page Down** for next; **←** or **Page Up** for previous; **Home** / **End**
-   for first / last. Clicking the right two-thirds of the screen goes forward, the left third goes back. On a phone or
-   tablet, swipe.
-4. **Speaker notes:** press **N** to show or hide the notes for the current slide (they are never in the PDF).
-5. **Demo video:** on slide 4, click the "Watch the demo" card; **Esc** closes it. The QR code points to the online
-   copy of the video (works once GitHub Pages is enabled).
-6. The slide counter is in the bottom-right corner; the URL ends with `#n`, so you can open a given slide directly.
+3. **Navigate, step by step:** slides 2 to 7 build up in 3 or 4 steps. **→**, **Space** or **Page Down** shows the
+   next step, and only moves to the next slide once the slide is complete; **←** or **Page Up** steps back (going back
+   to a previous slide shows it complete). **Home** / **End** jump to the first / last slide. Clicking the right
+   two-thirds of the screen goes forward, the left third goes back; on a phone or tablet, swipe.
+   The small dots next to the slide counter show how many steps the current slide has left; a thin bar at the top
+   shows progress through the deck. The cover plays its animation once by itself (about 2 seconds).
+4. **Slide 4, the attacks:** the Tamper / Replay / Equivocate buttons replay the Attack Lab with that attack's real
+   results from the app (latencies, mirror label, AI classification, attestation number).
+5. **Static mode:** press **A** to show every slide complete, with no motion (press **A** again to switch back). Use it
+   if the screen share stutters. It is also on automatically with `?static` at the end of the URL, when the computer
+   asks for reduced motion, and when printing (the PDF is the static mode).
+6. **Speaker notes:** press **N** to show or hide the notes for the current slide; **[→]** in the notes marks each
+   press. They are never in the PDF.
+7. **Demo video:** on slide 4, click the "Watch the demo" card; **Esc** closes it. The QR code opens the online copy:
+   https://manelell83.github.io/hashwitness/HashWitness-demo.mp4
+8. The slide counter is in the bottom-right corner; the URL ends with `#n`, so you can open a given slide directly.
 
 If the HTML cannot be opened (locked-down PC), present `HashWitness-DigiHacks.pdf` in any PDF viewer, in full-screen
 mode, and play `HashWitness-demo.mp4` separately.
@@ -39,8 +48,9 @@ npm install
 node capture.mjs        # real screenshots (needs pnpm demo running)
 node record.mjs         # demo video (needs pnpm demo running)
 node build-deck.mjs     # -> ../HashWitness-DigiHacks.html
-node export-pdf.mjs     # -> ../HashWitness-DigiHacks.pdf (offline, network blocked) + slide renders
+node export-pdf.mjs     # -> ../HashWitness-DigiHacks.pdf (static mode, offline, network blocked) + slide renders
 python compare.py       # PDF vs HTML check + ../contact-sheet.png
+node test-deck.mjs      # every step forward and back, frame timing, static mode, attack buttons, run video
 ```
 
 Font: Hanken Grotesk (SIL Open Font License, `build/assets/HankenGrotesk-OFL.txt`).

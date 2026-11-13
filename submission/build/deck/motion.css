@@ -1,0 +1,74 @@
+/* Motion for the HashWitness deck. Everything here is scoped to html:not(.static): in static mode (key A, ?static,
+   prefers-reduced-motion, print/PDF) none of it applies and deck.css shows the final state.
+   Only transform, opacity, stroke-dashoffset and filter are animated; 300-700 ms, ease-out; stagger 80 ms.
+   The only loop is the slow gradient drift on the two gradient slides (no text moves). */
+:root { --ease: cubic-bezier(0.2, 0.7, 0.2, 1); --stag: 80ms; }
+
+/* slide change: short fade + 24 px slide */
+html:not(.static) .slide { transform: translateX(24px); transition: opacity 320ms var(--ease), transform 320ms var(--ease), visibility 0s linear 320ms; }
+html:not(.static) .slide.is-active { transform: none; transition: opacity 320ms var(--ease), transform 320ms var(--ease); }
+
+/* chrome */
+html:not(.static) .progress { transition: transform 320ms var(--ease); }
+html:not(.static) .toast { transition: opacity 200ms ease-out; }
+
+/* entrance of the titles when a slide opens */
+html:not(.static) .slide .enter { opacity: 0; transform: translateY(16px); }
+html:not(.static) .slide.is-entered .enter { opacity: 1; transform: none; transition: opacity 500ms var(--ease), transform 500ms var(--ease); transition-delay: calc(var(--e, 0) * var(--stag)); }
+
+/* builds: hidden until their step, then fade up (staggered by --d) */
+html:not(.static) [data-build] { opacity: 0; transform: translateY(18px); transition: opacity 450ms var(--ease), transform 450ms var(--ease); }
+html:not(.static) [data-build].is-shown { opacity: 1; transform: none; transition-delay: calc(var(--d, 0) * var(--stag)); }
+html:not(.static) svg [data-build] { transform: none; }
+html:not(.static) .pop[data-build] { transform: scale(0.7); }
+html:not(.static) .pop[data-build].is-shown { transform: none; animation: pop 520ms var(--ease) both; animation-delay: calc(var(--d, 0) * var(--stag)); }
+@keyframes pop { 0% { opacity: 0; transform: scale(0.7); } 65% { opacity: 1; transform: scale(1.08); } 100% { opacity: 1; transform: scale(1); } }
+
+/* dashed connectors: when their group appears, the dashes run once in the direction of the data flow */
+html:not(.static) [data-build].is-shown .flow-line { animation: march 700ms var(--ease) both; animation-delay: calc(var(--d, 0) * var(--stag)); }
+@keyframes march { from { stroke-dashoffset: 48; } to { stroke-dashoffset: 0; } }
+
+/* state changes (data-state): the mirror drops the revocation, the arrow turns red */
+html:not(.static) .flow-line.bad { transition: opacity 400ms ease-out 250ms; }
+html:not(.static) .hidden-row { transition: opacity 400ms ease-out 450ms; }
+html:not(.static) .hidden-row .strike { transition: transform 450ms var(--ease) 250ms; }
+
+/* marker sweep behind a key phrase */
+html:not(.static) .sweep::before { transform: scaleX(0); transition: transform 650ms var(--ease); }
+html:not(.static) [data-build].is-shown .sweep::before,
+html:not(.static) .slide.is-entered h1 .sweep::before { transform: scaleX(1); transition-delay: calc(var(--sd, 3) * 100ms); }
+
+/* slide 4: the attacker row flashes red, then stays tinted */
+html:not(.static) .mr.liar::after { opacity: 0; }
+html:not(.static) .mr.liar.is-shown::after { opacity: 1; transition: opacity 300ms ease-out calc(var(--d, 0) * var(--stag) + 350ms); }
+html:not(.static) .mr.liar.is-shown::before { animation: flash 700ms ease-out both; animation-delay: calc(var(--d, 0) * var(--stag) + 250ms); }
+@keyframes flash { 0% { opacity: 0; } 30% { opacity: 1; } 100% { opacity: 0; } }
+
+/* slide 6: bars fill and numbers count up (deck.js) when the stats appear */
+html:not(.static) [data-build] .bar::after { transform: scaleX(0); transition: transform 700ms var(--ease); }
+html:not(.static) [data-build].is-shown .bar::after { transform: scaleX(var(--to)); transition-delay: calc(var(--d, 0) * var(--stag) + 150ms); }
+
+/* gradient slides: one slow ambient drift of the background layer */
+html:not(.static) .slide.grad::before { inset: -6%; }
+html:not(.static) .slide.grad.is-active::before { animation: drift 18s ease-in-out infinite alternate; }
+@keyframes drift { from { transform: translate3d(-2.5%, -2%, 0); } to { transform: translate3d(2.5%, 2%, 0) scale(1.03); } }
+
+/* slide 1: the illustration plays once when the slide opens (about 2.1 s, no step longer than 0.6 s):
+   three mirror lines draw in, one turns red and is cut, the other two merge, one verified line goes out. */
+html:not(.static) .cover.is-entered .art-nodes,
+html:not(.static) .cover.is-entered .art-liar-node { animation: fade-in 350ms ease-out both 100ms; }
+html:not(.static) .cover.is-entered .art-reveal { animation: grow-x 600ms var(--ease) both 300ms; }
+html:not(.static) .cover.is-entered .art-lens { animation: lens-in 400ms var(--ease) both 600ms; }
+html:not(.static) .cover.is-entered .liar-tail { animation: liar-cut 500ms ease-out both 1050ms; }
+html:not(.static) .cover.is-entered .liar-red,
+html:not(.static) .cover.is-entered .art-liar-node-red { animation: fade-in 300ms ease-out both 950ms; }
+html:not(.static) .cover.is-entered .art-x { animation: pop 450ms var(--ease) both 1250ms; }
+html:not(.static) .cover.is-entered .art-out { animation: grow-x 450ms var(--ease) both 1450ms; }
+html:not(.static) .cover.is-entered .art-glow { animation: pop 500ms var(--ease) both 1800ms; }
+html:not(.static) .cover.is-entered .art-truth { animation: pop 500ms var(--ease) both 1750ms; }
+html:not(.static) .cover.is-entered .art-rings { animation: fade-in 600ms ease-out both 1900ms; }
+html:not(.static) .cover:not(.is-entered) .cover-art { opacity: 0; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes grow-x { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes lens-in { from { opacity: 0; transform: scaleY(0.4); } to { opacity: 1; transform: none; } }
+@keyframes liar-cut { 0% { opacity: 0.85; } 100% { opacity: 0; } }

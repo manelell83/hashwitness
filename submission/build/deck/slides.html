@@ -1,193 +1,237 @@
 <!--
   HashWitness pitch deck: slide markup. Built into ../../HashWitness-DigiHacks.html by build-deck.mjs.
-  Placeholders: {{IMG:name}} (assets/shots/name.png), {{POSTER}}, {{QR:video}}, {{QR:repo}}, {{LOGO}}.
-  Every number comes from the project's measured outputs (README, NOTES.md, .data/sim/metrics.json).
-  Speaker notes: the <aside class="speaker-notes"> in each slide (press N in the browser).
+  Placeholders: {{QR:video}}, {{QR:repo}}, {{LOGO}}.
+  Builds: an element with data-build="n" appears at step n of its slide (arrow / space / click).
+          An element with data-state="n" gets the class is-on from step n (a change of look, not an entrance).
+          --d sets the stagger slot inside a step (80 ms each).
+  Static mode (key A, ?static, reduced motion, print/PDF) shows every slide in its final state.
+  Every number comes from measured project outputs (README, NOTES.md, .data/sim/metrics.json, the app's own screens).
+  Speaker notes: <aside class="speaker-notes"> (key N). [→] in the notes marks a press.
 -->
 
-<!-- 1. Project & team -->
-<section class="slide grad" data-title="HashWitness">
-  <div class="cover-brand"><span style="display:grid;place-items:center;width:76px;height:76px;border-radius:20px;background:#fff">{{LOGO}}</span>HashWitness</div>
-  <p class="eyebrow" style="margin-top:120px">Hedera Cross Campus Challenge 2026 · INPT Campus Edition</p>
-  <h1 class="cover-title" style="margin-top:0">Hash<b>Witness</b></h1>
-  <p class="cover-sub">Verify Hedera data without trusting<br>a single mirror node.</p>
-  <div class="cover-team">
+<!-- 1. Project & team: no steps; the illustration plays once when the slide opens -->
+<section class="slide grad cover" data-title="HashWitness">
+  <div class="cover-brand enter" style="--e:0"><span class="logo-tile">{{LOGO}}</span>HashWitness</div>
+  <p class="eyebrow enter" style="margin-top:120px;--e:1">Hedera Cross Campus Challenge 2026 · INPT Campus Edition</p>
+  <h1 class="cover-title enter" style="--e:2">Hash<b>Witness</b></h1>
+  <p class="cover-sub enter" style="--e:3">Verify Hedera data without trusting<br>a single mirror node.</p>
+  <div class="cover-team enter" style="--e:4">
     <p class="team">Team DigiHacks</p>
     <p>Manal Chemlali · Aymane El Farme · Redone Meriche</p>
   </div>
   <svg class="cover-art" viewBox="0 0 860 760" aria-hidden="true">
-    <!-- several mirrors (left) send their views through one lens (verification) into one point (the truth) -->
-    <g fill="none" stroke="#fff" stroke-width="2">
-      <circle cx="560" cy="380" r="300" stroke-opacity="0.12"/>
-      <circle cx="560" cy="380" r="210" stroke-opacity="0.16"/>
-      <circle cx="560" cy="380" r="120" stroke-opacity="0.22"/>
+    <defs>
+      <mask id="reveal-rays" maskUnits="userSpaceOnUse" x="0" y="0" width="860" height="760">
+        <rect class="art-reveal" x="0" y="0" width="460" height="760" fill="#fff"/>
+      </mask>
+    </defs>
+    <!-- rings around the single truth -->
+    <g class="art-rings" fill="none" stroke="#fff" stroke-width="2">
+      <circle cx="610" cy="380" r="230" stroke-opacity="0.14"/>
+      <circle cx="610" cy="380" r="150" stroke-opacity="0.2"/>
     </g>
-    <g stroke="#fff" stroke-width="2.5" stroke-dasharray="10 12" fill="none">
-      <line x1="90" y1="110" x2="400" y2="380" stroke-opacity="0.7"/>
-      <line x1="40" y1="250" x2="400" y2="380" stroke-opacity="0.7"/>
-      <line x1="30" y1="510" x2="400" y2="380" stroke-opacity="0.7"/>
-      <line x1="90" y1="650" x2="400" y2="380" stroke-opacity="0.7"/>
+    <!-- three mirrors: two honest rays reach the lens; the lying one turns red and is cut before it -->
+    <g mask="url(#reveal-rays)" stroke-width="3" stroke-dasharray="12 12" fill="none">
+      <line x1="60" y1="150" x2="440" y2="372" stroke="#fff" stroke-opacity="0.85"/>
+      <line x1="60" y1="610" x2="440" y2="388" stroke="#fff" stroke-opacity="0.85"/>
+      <line class="liar-tail" x1="60" y1="380" x2="440" y2="380" stroke="#fff" stroke-opacity="0.85"/>
+      <line class="liar-red" x1="60" y1="380" x2="250" y2="380" stroke="#FFB3D9"/>
     </g>
-    <!-- the lying mirror: its ray is stopped before the lens -->
-    <line x1="20" y1="380" x2="250" y2="380" stroke="#FFB3D9" stroke-width="2.5" stroke-dasharray="10 12"/>
-    <g stroke="#FFB3D9" stroke-width="4" stroke-linecap="round"><line x1="268" y1="362" x2="300" y2="398"/><line x1="300" y1="362" x2="268" y2="398"/></g>
-    <g fill="#fff"><circle cx="90" cy="110" r="14"/><circle cx="40" cy="250" r="14"/><circle cx="30" cy="510" r="14"/><circle cx="90" cy="650" r="14"/></g>
-    <circle cx="20" cy="380" r="14" fill="#FFB3D9"/>
-    <!-- lens -->
-    <ellipse cx="420" cy="380" rx="34" ry="120" fill="#fff" fill-opacity="0.14" stroke="#fff" stroke-width="2.5"/>
-    <line x1="454" y1="380" x2="540" y2="380" stroke="#fff" stroke-width="4"/>
-    <!-- the one truth -->
-    <circle cx="560" cy="380" r="46" fill="#fff" fill-opacity="0.18"/>
-    <circle cx="560" cy="380" r="22" fill="#fff"/>
+    <g class="art-x" stroke="#FFB3D9" stroke-width="5" stroke-linecap="round"><line x1="268" y1="360" x2="304" y2="400"/><line x1="304" y1="360" x2="268" y2="400"/></g>
+    <g class="art-nodes" fill="#fff"><circle cx="60" cy="150" r="16"/><circle cx="60" cy="610" r="16"/></g>
+    <circle class="art-liar-node" cx="60" cy="380" r="16" fill="#fff"/>
+    <circle class="art-liar-node-red" cx="60" cy="380" r="16" fill="#FFB3D9"/>
+    <!-- lens, then one verified line out to the single truth -->
+    <ellipse class="art-lens" cx="460" cy="380" rx="34" ry="120" fill="#fff" fill-opacity="0.16" stroke="#fff" stroke-width="3"/>
+    <line class="art-out" x1="494" y1="380" x2="588" y2="380" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+    <circle class="art-glow" cx="610" cy="380" r="52" fill="#fff" fill-opacity="0.2"/>
+    <circle class="art-truth" cx="610" cy="380" r="24" fill="#fff"/>
   </svg>
-  <div class="foot"><span>14 November 2026 · Hedera testnet</span><span>github.com/manelell83/hashwitness</span></div>
-  <aside class="speaker-notes" hidden><b>Manal · 0:00–0:25.</b> Hi, we are DigiHacks: Manal, Aymane and Redone. Our project is HashWitness. In one sentence: it lets any application verify the Hedera data it reads, without having to trust a single mirror node. The picture says it: several mirrors go in, one of them lies, and only one verified truth comes out.</aside>
+  <div class="foot enter" style="--e:5"><span>14 November 2026 · Hedera testnet</span><span>github.com/manelell83/hashwitness</span></div>
+  <aside class="speaker-notes" hidden><b>Manal · 0:00–0:25.</b> Hi, we are DigiHacks: Manal, Aymane and Redone. Our project is HashWitness. In one sentence: it lets any application verify the Hedera data it reads, without having to trust a single mirror node. Look at the picture: three mirrors answer, one of them lies and is cut off, and only one verified line comes out. [→ next slide]</aside>
 </section>
 
-<!-- 2. Problem -->
+<!-- 2. Problem: 4 steps -->
 <section class="slide" data-title="Problem">
-  <p class="eyebrow">02 · The problem</p>
-  <h1>Consensus is trustworthy. <mark class="hl"><b>One mirror</b></mark> is not.</h1>
+  <p class="eyebrow enter" style="--e:0">02 · The problem</p>
+  <h1 class="enter" style="--e:1">Consensus is trustworthy. <mark class="hl"><b>One mirror</b></mark> is not.</h1>
   <div class="flow">
     <svg class="wires" aria-hidden="true">
-      <g stroke="#B983F2" stroke-width="2" stroke-dasharray="8 8"><line x1="330" y1="170" x2="450" y2="170"/><line x1="780" y1="170" x2="900" y2="170"/><line x1="1230" y1="170" x2="1350" y2="170"/></g>
-      <g fill="#B983F2"><circle cx="330" cy="170" r="7"/><circle cx="450" cy="170" r="7"/><circle cx="780" cy="170" r="7"/><circle cx="900" cy="170" r="7"/><circle cx="1230" cy="170" r="7"/><circle cx="1350" cy="170" r="7"/></g>
+      <g data-build="1" style="--d:3"><line class="flow-line" x1="330" y1="170" x2="450" y2="170"/><circle cx="330" cy="170" r="7"/><circle cx="450" cy="170" r="7"/></g>
+      <g data-build="2" style="--d:3"><line class="flow-line" x1="780" y1="170" x2="900" y2="170"/><circle cx="780" cy="170" r="7"/><circle cx="900" cy="170" r="7"/></g>
+      <g data-build="3" style="--d:4"><line class="flow-line" x1="1230" y1="170" x2="1350" y2="170"/><line class="flow-line bad" data-state="3" x1="1230" y1="170" x2="1350" y2="170"/><circle cx="1230" cy="170" r="7"/><circle cx="1350" cy="170" r="7"/></g>
     </svg>
-    <div class="card node" style="left:0">
+    <div class="card node" data-build="1" style="left:0">
       <svg class="icon" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"><path d="M4 22 28 11l24 11-24 11Z"/><path d="M14 27v12c8 6 20 6 28 0V27"/><path d="M50 23v13"/></svg>
       <h2>School</h2>
       <p class="small ink2">Issues diploma DIP-001 on Hedera, later <b>revokes</b> it.</p>
     </div>
-    <div class="card node" style="left:450px">
+    <div class="card node" data-build="2" style="left:450px">
       <svg class="icon" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"><path d="M28 6 50 18 28 30 6 18Z"/><path d="m6 28 22 12 22-12"/><path d="m6 38 22 12 22-12"/></svg>
       <h2>Hedera consensus</h2>
-      <p class="small ink2">Ordered and final: the revocation <b>is</b> on the ledger.</p>
+      <p class="small ink2">Ordered and final:</p>
+      <span class="stamp pop" data-build="2" style="--d:2">✓ revoked · seq 3</span>
     </div>
-    <div class="card node is-focus" style="left:900px">
+    <div class="card node is-focus" data-build="3" style="left:900px">
       <svg class="icon" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"><rect x="8" y="8" width="40" height="16" rx="4"/><rect x="8" y="32" width="40" height="16" rx="4"/><path d="M16 16h2M16 40h2"/></svg>
       <h2>One mirror node</h2>
-      <p class="small ink2">Plain JSON, no proof. If compromised, it <b>hides</b> the revocation.</p>
+      <p class="small mrow">seq 1 · issue</p>
+      <p class="small mrow hidden-row" data-state="3"><span>seq 3 · revoke</span><i class="strike" aria-hidden="true"></i></p>
+      <p class="small ink2">Plain JSON, no proof.</p>
     </div>
-    <div class="card node" style="left:1350px">
+    <div class="card node" data-build="4" style="left:1350px">
       <svg class="icon" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"><rect x="6" y="16" width="44" height="32" rx="6"/><path d="M20 16v-6h16v6"/></svg>
       <h2>Recruiter app</h2>
-      <p class="small ink2">Shows <span class="verdict-bad">✓ Valid</span> for a revoked diploma.</p>
+      <span class="vbadge ok pop" data-build="4" style="--d:2">✓ Valid</span>
+      <p class="small verdict-bad">for a revoked diploma</p>
     </div>
   </div>
   <div class="threats">
-    <div class="card"><svg class="icon" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M10 46 46 10M12 12h12M12 12v12M44 44H32M44 44V32"/></svg><div><h2>Tamper</h2><p class="small ink2">Delete the revocation, re-forge the hash chain.</p></div></div>
-    <div class="card"><svg class="icon" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M14 22a16 16 0 1 1-2 14"/><path d="M12 10v12h12"/></svg><div><h2>Replay</h2><p class="small ink2">Serve an old snapshot, before the revocation.</p></div></div>
-    <div class="card"><svg class="icon" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="28" cy="28" r="20"/><path d="M28 8v40"/><path d="M18 22h2M36 22h2M18 36c3 3 7 3 10 0M28 36c3-3 7-3 10 0"/></svg><div><h2>Equivocate</h2><p class="small ink2">Tell each client a different story.</p></div></div>
+    <div class="card" data-build="4" style="--d:4"><svg class="icon" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M10 46 46 10M12 12h12M12 12v12M44 44H32M44 44V32"/></svg><div><h2>Tamper</h2><p class="small ink2">Delete the revocation, re-forge the hash chain.</p></div></div>
+    <div class="card" data-build="4" style="--d:5"><svg class="icon" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M14 22a16 16 0 1 1-2 14"/><path d="M12 10v12h12"/></svg><div><h2>Replay</h2><p class="small ink2">Serve an old snapshot, before the revocation.</p></div></div>
+    <div class="card" data-build="4" style="--d:6"><svg class="icon" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="28" cy="28" r="20"/><path d="M28 8v40"/><path d="M18 22h2M36 22h2M18 36c3 3 7 3 10 0M28 36c3-3 7-3 10 0"/></svg><div><h2>Equivocate</h2><p class="small ink2">Tell each client a different story.</p></div></div>
   </div>
-  <aside class="speaker-notes" hidden><b>Manal · 0:25–1:05.</b> Here is the problem. A school issues a diploma on Hedera and later revokes it. Consensus is final, the revocation is on the ledger. But a recruiter's app never talks to consensus: it reads through one mirror node, a REST API that returns plain JSON with no proof. If that one mirror is compromised, it can delete the revocation and re-forge the hash chain, serve an old snapshot, or show different clients different stories. The recruiter then accepts a revoked diploma. Over to Aymane for our solution.</aside>
+  <aside class="speaker-notes" hidden><b>Manal · 0:25–1:05.</b> [→] A school issues a diploma on Hedera, and later revokes it. [→] Consensus is final: the revocation is stamped on the ledger, sequence 3. [→] But a recruiter's app never talks to consensus: it reads one mirror node, plain JSON, no proof. A compromised mirror simply drops the revocation. [→] So the recruiter's app shows Valid for a revoked diploma. The mirror can tamper, replay an old snapshot, or tell each client a different story. Over to Aymane. [→ next slide]</aside>
 </section>
 
-<!-- 3. Solution -->
+<!-- 3. Solution: 4 steps -->
 <section class="slide" data-title="Solution">
   <div class="panel">
-    <p class="eyebrow">03 · The solution</p>
-    <h1>Several mirrors. One <b class="accent">truth</b>.</h1>
+    <p class="eyebrow enter" style="--e:0">03 · The solution</p>
+    <h1 class="enter" style="--e:1">Several mirrors. One <b class="accent">truth</b>.</h1>
     <div class="pillars">
-      <div class="pillar"><span class="num">01 · VERIFY</span><h2>Quorum + cryptography</h2><p>Ask several mirrors, recompute Hedera's SHA-384 running hash, check it ends at the consensus-node anchor.</p></div>
-      <div class="pillar"><span class="num">02 · EXPLAIN</span><h2>AI forensic report</h2><p>Which mirror lied, how, at which sequence numbers, and what to do about it.</p></div>
-      <div class="pillar"><span class="num">03 · PROVE</span><h2>Audit trail on HCS</h2><p>Every verdict and its report hash are attested on the Hedera Consensus Service.</p></div>
+      <div class="pillar" data-build="1"><span class="num">01 · VERIFY</span><h2>Quorum + cryptography</h2><p>Ask several mirrors, recompute Hedera's SHA-384 running hash, check it ends at the consensus-node anchor.</p></div>
+      <div class="pillar" data-build="2"><span class="num">02 · EXPLAIN</span><h2>AI forensic report</h2><p>Which mirror lied, how, at which sequence numbers, and what to do about it.</p></div>
+      <div class="pillar" data-build="3"><span class="num">03 · PROVE</span><h2>Audit trail on HCS</h2><p>Every verdict and its report hash are attested on the Hedera Consensus Service.</p></div>
     </div>
-    <div class="rule"><span class="pill" style="background:var(--accent);border-color:var(--accent);color:var(--panel)">Golden rule</span><span>The AI <b>proposes</b>. Deterministic logic and cryptography <b>decide</b>.</span></div>
+    <div class="rule" data-build="4"><span class="pill" style="background:var(--accent);border-color:var(--accent);color:var(--panel)">Golden rule</span><span class="sweep" style="--sd:3">The AI <b>proposes</b>. Deterministic logic and cryptography <b>decide</b>.</span></div>
   </div>
-  <aside class="speaker-notes" hidden><b>Aymane · 1:05–1:45.</b> HashWitness does three things. First, it verifies: it asks several mirrors, recomputes Hedera's own SHA-384 running-hash chain locally, and checks that the chain ends exactly at the hash a consensus node reports. A forged history cannot. Second, it explains: an AI agent writes a forensic report. Third, it proves: every verdict is attested on the Hedera Consensus Service. And one golden rule: the AI proposes, cryptography decides. No verdict ever depends on the AI.</aside>
+  <aside class="speaker-notes" hidden><b>Aymane · 1:05–1:45.</b> HashWitness does three things. [→] It verifies: it asks several mirrors, recomputes Hedera's own SHA-384 running-hash chain, and checks that it ends at the hash a consensus node reports. A forged history cannot. [→] It explains: an AI agent writes a forensic report. [→] It proves: every verdict is attested on the Hedera Consensus Service. [→] One golden rule: the AI proposes, cryptography decides. [→ next slide]</aside>
 </section>
 
-<!-- 4. Product / PoC -->
-<section class="slide" data-title="Product">
-  <p class="eyebrow">04 · Working proof of concept</p>
-  <h1>Same data, <mark class="hl"><b>two answers</b></mark>.</h1>
+<!-- 4. Product / PoC: 3 steps, replayed live with the app's real data (see LAB_DATA in deck.js) -->
+<section class="slide" data-title="Product" data-lab>
+  <p class="eyebrow enter" style="--e:0">04 · Working proof of concept</p>
+  <h1 class="enter" style="--e:1">Same data, <mark class="hl"><b>two answers</b></mark>.</h1>
   <div class="product">
     <div>
-      <div class="shot"><img src="{{IMG:lab-tamper}}" alt="Attack Lab: the naive app trusting the attacker mirror shows Valid; HashWitness flags the attacker mirror as Forged history and returns Revoked."></div>
-      <div class="outcomes">
-        <span class="pill">Tamper → <b>Forged history</b></span>
-        <span class="pill">Replay → <b>Stale view</b></span>
-        <span class="pill">Equivocate → <b>Two-faced</b></span>
+      <div class="lab-frame">
+        <div class="lab-card naive">
+          <h3>Naive app</h3>
+          <p class="lab-sub">Trusts one mirror: <span class="mono">fake-mirror (attacker)</span></p>
+          <span class="vbadge app-ok pop" data-build="1">✓ Valid</span>
+          <p class="lab-sub" data-build="1" style="--d:2" data-slot="naive">Read 3 messages in 170 ms. No cross-check.</p>
+        </div>
+        <div class="lab-card hw">
+          <h3>HashWitness</h3>
+          <p class="lab-sub">Quorum 2 of 3, anchored on a consensus node.</p>
+          <div class="mrows">
+            <div class="mr" data-build="2" style="--d:0"><span>hedera-public</span><span class="mono" data-slot="l1">166 ms</span><span class="agree">✓ Agrees</span></div>
+            <div class="mr" data-build="2" style="--d:1"><span>hgraph</span><span class="mono" data-slot="l2">591 ms</span><span class="agree">✓ Agrees</span></div>
+            <div class="mr liar" data-build="2" style="--d:2"><span>fake-mirror (attacker)</span><span class="mono" data-slot="l3">88 ms</span><span class="lie" data-slot="label">✕ Forged history</span></div>
+          </div>
+          <span class="vbadge app-bad pop" data-build="2" style="--d:6">✕ Revoked</span>
+        </div>
       </div>
-      <p class="small muted" style="margin-top:22px">Real testnet data · 2 real mirrors + 1 simulated attacker · always Revoked</p>
+      <div class="attack-chips" role="group" aria-label="Replay an attack">
+        <button type="button" class="chip is-active" data-attack="tamper">Tamper</button>
+        <button type="button" class="chip" data-attack="replay">Replay</button>
+        <button type="button" class="chip" data-attack="equivocate">Equivocate</button>
+        <span class="small muted chip-hint">click an attack to replay it</span>
+      </div>
+      <p class="small muted" style="margin-top:18px">Real testnet data · 2 real mirrors + 1 simulated attacker · always Revoked</p>
     </div>
     <div>
-      <div class="shot"><img src="{{IMG:report-tamper-zoom}}" alt="Forensic report detail: sequence 3 altered and sequence 4 missing in the attacker mirror; AI analysis by the LLM openai/gpt-oss-20b classifies it as tampering."></div>
+      <div class="report-panel" data-build="3">
+        <p class="rp-title">Differences by sequence number</p>
+        <p class="rp-line"><span class="mono">seq 3</span> <span data-slot="d3">altered</span></p>
+        <p class="rp-line"><span class="mono">seq 4</span> <span data-slot="d4">missing</span></p>
+        <p class="rp-note">in fake-mirror (attacker)</p>
+        <p class="rp-title" style="margin-top:18px">AI analysis <span class="rp-muted">· proposes, does not decide</span></p>
+        <span class="engine">Engine: <b>LLM: openai/gpt-oss-20b, cached</b></span>
+        <p class="rp-line"><b data-slot="ai">Tampering</b> <span class="rp-muted">· confidence <span data-slot="conf">95%</span></span></p>
+        <p class="rp-note">Attestation <span data-slot="att">#38</span> on HCS</p>
+      </div>
       <div class="card video-card" role="button" tabindex="0" data-action="play" aria-label="Play the 86-second demo video">
         {{QR:video}}
         <div><span class="play" aria-hidden="true">▶</span><p style="font-weight:700">Watch the demo</p><p class="small muted">86 s · scan or click</p></div>
       </div>
     </div>
   </div>
-  <aside class="speaker-notes" hidden><b>Aymane · 1:45–2:45.</b> This is our working proof of concept, on real testnet data. In the Attack Lab, a third mirror is controlled by an attacker. Left: a naive app trusting that mirror says Valid. Right: HashWitness. The two real mirrors, the Hedera public mirror and Hgraph, agree; the attacker row is red, "Forged history", and the verdict is Revoked. Same for replay, flagged "Stale view", and equivocation, flagged "Two-faced". The forensic report shows exactly which sequence numbers were altered, and the AI analysis, here answered by the LLM gpt-oss-20b. (Optional: switch to the live app or the video now.) Redone will explain why this needs Hedera.</aside>
+  <aside class="speaker-notes" hidden><b>Aymane · 1:45–2:45.</b> Our working proof of concept, on real testnet data; a third mirror is controlled by an attacker. [→] Left, a naive app trusting that mirror: Valid. [→] HashWitness asks all three. The two real mirrors, Hedera public and Hgraph, agree; the attacker is caught, "Forged history", and the verdict is Revoked. [→] The report shows exactly which sequence numbers were altered, and the AI analysis, answered by the LLM gpt-oss-20b. (Click Replay or Equivocate to replay those attacks with their real results.) Redone will explain why this needs Hedera. [→ next slide]</aside>
 </section>
 
-<!-- 5. Technology & Hedera -->
+<!-- 5. Technology & Hedera: 4 steps, the diagram draws itself in data-flow order -->
 <section class="slide" data-title="Technology and Hedera">
-  <p class="eyebrow">05 · Technology &amp; Hedera</p>
-  <h1>Hedera is the <mark class="hl"><b>anchor</b></mark> of trust.</h1>
+  <p class="eyebrow enter" style="--e:0">05 · Technology &amp; Hedera</p>
+  <h1 class="enter" style="--e:1">Hedera is the <mark class="hl"><b>anchor</b></mark> of trust.</h1>
   <div class="tech">
     <div class="arch">
       <svg aria-hidden="true">
-        <g stroke="#B983F2" stroke-width="2" stroke-dasharray="8 8" fill="none">
-          <path d="M300 48H355"/>
-          <path d="M505 96V132M160 132H850M160 132V170M505 132V170M850 132V170"/>
-          <path d="M160 266V314M850 266V314M160 314H850M310 314V360"/>
-          <path d="M680 425H620"/>
-          <path d="M235 490V580"/>
-          <path d="M560 490V535H775V580"/>
-        </g>
-        <g fill="#B983F2"><circle cx="300" cy="48" r="6"/><circle cx="355" cy="48" r="6"/><circle cx="505" cy="96" r="6"/><circle cx="160" cy="170" r="6"/><circle cx="505" cy="170" r="6"/><circle cx="850" cy="170" r="6"/><circle cx="310" cy="360" r="6"/><circle cx="680" cy="425" r="6"/><circle cx="620" cy="425" r="6"/><circle cx="235" cy="580" r="6"/><circle cx="775" cy="580" r="6"/></g>
+        <g data-build="1" style="--d:1"><path class="flow-line" d="M300 48H355"/><circle cx="300" cy="48" r="6"/><circle cx="355" cy="48" r="6"/></g>
+        <g data-build="1" style="--d:3"><path class="flow-line" d="M505 96V132M505 132H160M505 132H850M160 132V170M505 132V170M850 132V170"/><circle cx="505" cy="96" r="6"/><circle cx="160" cy="170" r="6"/><circle cx="505" cy="170" r="6"/><circle cx="850" cy="170" r="6"/></g>
+        <g data-build="2" style="--d:0"><path class="flow-line" d="M160 266V314M850 266V314M160 314H310M850 314H310M310 314V360"/><circle cx="310" cy="360" r="6"/></g>
+        <g data-build="2" style="--d:3"><path class="flow-line" d="M680 425H620"/><circle cx="680" cy="425" r="6"/><circle cx="620" cy="425" r="6"/></g>
+        <g data-build="3" style="--d:0"><path class="flow-line" d="M235 490V580"/><path class="flow-line" d="M560 490V535H775V580"/><circle cx="235" cy="580" r="6"/><circle cx="775" cy="580" r="6"/></g>
       </svg>
-      <div class="box" style="left:0;top:0;width:300px"><b>Issuer</b>issue / revoke events</div>
-      <div class="box hedera" style="left:355px;top:0;width:300px"><b>HCS registry topic</b>ordered, running hash</div>
-      <div class="box" style="left:0;top:170px;width:320px"><b>Hedera public mirror</b><span class="tag real">real</span></div>
-      <div class="box" style="left:345px;top:170px;width:320px"><b>Hgraph mirror</b><span class="tag real">real</span></div>
-      <div class="box" style="left:690px;top:170px;width:320px"><b>Attacker mirror</b><span class="tag sim">simulated</span></div>
-      <div class="box core" style="left:0;top:360px;width:620px;height:130px"><b>HashWitness core</b>quorum · SHA-384 chain · anchor check<br>adaptive mirror selection (bandit)</div>
-      <div class="box hedera" style="left:680px;top:372px;width:330px"><b>Consensus node</b>anchor: head seq + hash</div>
-      <div class="box" style="left:0;top:580px;width:470px"><b>AI forensic agent</b>LLM gpt-oss-20b · rule fallback</div>
-      <div class="box hedera" style="left:540px;top:580px;width:470px"><b>HCS attestation topic</b>verdict + report hash</div>
+      <div class="box" data-build="1" style="left:0;top:0;width:300px;--d:0"><b>Issuer</b>issue / revoke events</div>
+      <div class="box hedera" data-build="1" style="left:355px;top:0;width:300px;--d:2"><b>HCS registry topic</b>ordered, running hash</div>
+      <div class="box" data-build="1" style="left:0;top:170px;width:320px;--d:4"><b>Hedera public mirror</b><span class="tag real">real</span></div>
+      <div class="box" data-build="1" style="left:345px;top:170px;width:320px;--d:5"><b>Hgraph mirror</b><span class="tag real">real</span></div>
+      <div class="box" data-build="1" style="left:690px;top:170px;width:320px;--d:6"><b>Attacker mirror</b><span class="tag sim">simulated</span></div>
+      <div class="box core" data-build="2" style="left:0;top:360px;width:620px;height:130px;--d:1"><b>HashWitness core</b>quorum · SHA-384 chain · anchor check<br>adaptive mirror selection (bandit)</div>
+      <div class="box hedera" data-build="2" style="left:680px;top:372px;width:330px;--d:3"><b>Consensus node</b>anchor: head seq + hash</div>
+      <div class="box" data-build="3" style="left:0;top:580px;width:470px;--d:1"><b>AI forensic agent</b>LLM gpt-oss-20b · rule fallback</div>
+      <div class="box hedera" data-build="3" style="left:540px;top:580px;width:470px;--d:2"><b>HCS attestation topic</b>verdict + report hash</div>
     </div>
     <div class="why">
-      <div class="card"><h2>Running hash</h2><p class="small ink2">Each HCS message commits to the whole history. We recompute it: matched 100/100 real messages.</p></div>
-      <div class="card"><h2>Consensus anchor</h2><p class="small ink2">Head of the topic straight from a consensus node: a mirror cannot fake it.</p></div>
-      <div class="card"><h2>Public audit log</h2><p class="small ink2">Attestations on HCS: ordered, tamper-evident, about&nbsp;0.0053&nbsp;HBAR each.</p></div>
+      <div class="card" data-build="4" style="--d:0"><h2>Running hash</h2><p class="small ink2">Each HCS message commits to the whole history. We recompute it: matched <span data-count="100">100</span>/100 real messages.</p></div>
+      <div class="card" data-build="4" style="--d:1"><h2>Consensus anchor</h2><p class="small ink2">Head of the topic straight from a consensus node: a mirror cannot fake it.</p></div>
+      <div class="card" data-build="4" style="--d:2"><h2>Public audit log</h2><p class="small ink2">Attestations on HCS: ordered, tamper-evident, about&nbsp;0.0053&nbsp;HBAR each.</p></div>
     </div>
   </div>
-  <aside class="speaker-notes" hidden><b>Redone · 2:45–3:35.</b> Why Hedera? Three reasons, all used in the code. One: the Consensus Service gives every message a running hash that commits to the whole history. We reimplemented Hedera's exact algorithm and matched 100 out of 100 real testnet messages, so a mirror cannot alter or drop a message unnoticed. Two: we read the topic head straight from a consensus node. That anchor turns a majority vote into a proof: a forged chain, even a perfect-looking one, does not end at that hash. Three: every verification is attested on HCS, a public, ordered audit log, for about 0.0053 hbar each. Mirrors are the data source; two are real, the attacker is simulated. The AI agent runs live on OpenRouter with a rule-based fallback, and a Thompson-sampling bandit picks mirrors to cut query cost.</aside>
+  <aside class="speaker-notes" hidden><b>Redone · 2:45–3:35.</b> Why Hedera? Follow the data. [→] The issuer writes to an HCS topic; mirrors copy it: two real ones, Hedera public and Hgraph, and our simulated attacker. [→] HashWitness checks them against the topic head read straight from a consensus node. [→] The AI agent explains, and every verdict is attested back on HCS. [→] Three reasons this needs Hedera: the running hash commits to the whole history, we matched 100 out of 100 real messages; the consensus anchor cannot be faked by a mirror; and HCS gives a public audit log at about 0.0053 HBAR per attestation. [→ next slide]</aside>
 </section>
 
-<!-- 6. Impact & adoption -->
+<!-- 6. Impact & adoption: 3 steps -->
 <section class="slide" data-title="Impact">
-  <p class="eyebrow">06 · Impact &amp; adoption</p>
-  <h1>For everyone who <mark class="hl"><b>reads</b></mark> Hedera.</h1>
+  <p class="eyebrow enter" style="--e:0">06 · Impact &amp; adoption</p>
+  <h1 class="enter" style="--e:1">For everyone who <mark class="hl"><b>reads</b></mark> Hedera.</h1>
   <div class="audience">
-    <div class="card is-focus"><h2>Schools</h2><p class="ink2">Issue diplomas on HCS. A mirror can no longer hide a revocation.</p></div>
-    <div class="card is-faded"><h2>Recruiters</h2><p class="ink2">One check: a verdict backed by consensus, plus a public receipt.</p></div>
-    <div class="card is-faded"><h2>Any Hedera app</h2><p class="ink2">Wallets, explorers, dApps: a verifier for mirror REST data.</p></div>
+    <div class="card is-focus" data-build="1" style="--d:0"><h2>Schools</h2><p class="ink2">Issue diplomas on HCS. A mirror can no longer hide a revocation.</p></div>
+    <div class="card is-faded" data-build="1" style="--d:1"><h2>Recruiters</h2><p class="ink2">One check: a verdict backed by consensus, plus a public receipt.</p></div>
+    <div class="card is-faded" data-build="1" style="--d:2"><h2>Any Hedera app</h2><p class="ink2">Wallets, explorers, dApps: a verifier for mirror REST data.</p></div>
   </div>
   <div class="stats">
-    <div class="stat"><p class="big">0%</p><p class="small ink2">lies accepted, in every attack (testnet + 200 simulated scenarios)</p></div>
-    <div class="stat"><p class="big">−77%</p><p class="small ink2">query cost with adaptive mirror selection vs querying every mirror (simulated)</p></div>
-    <div class="stat"><p class="big">3 / 3</p><p class="small ink2">attacks caught on real testnet data: tamper, replay, equivocation</p></div>
+    <div class="stat" data-build="2" style="--d:0">
+      <p class="big"><span data-count="0">0</span>%</p><p class="small ink2">lies accepted, in every attack (testnet + 200 simulated scenarios)</p>
+      <div class="bars"><span class="small">naive app</span><i class="bar bad" style="--to:1"></i><span class="small">HashWitness</span><i class="bar" style="--to:0"></i></div>
+    </div>
+    <div class="stat" data-build="2" style="--d:2">
+      <p class="big">−<span data-count="77">77</span>%</p><p class="small ink2">query cost with adaptive mirror selection vs querying every mirror (simulated)</p>
+      <div class="bars"><span class="small">query-all</span><i class="bar muted-bar" style="--to:1"></i><span class="small">bandit</span><i class="bar" style="--to:0.233"></i></div>
+    </div>
+    <div class="stat" data-build="2" style="--d:4">
+      <p class="big"><span data-count="3">3</span> / 3</p><p class="small ink2">attacks caught on real testnet data: tamper, replay, equivocation</p>
+      <div class="bars"><span class="small">caught</span><span class="segs"><i class="bar" style="--to:1"></i><i class="bar" style="--to:1"></i><i class="bar" style="--to:1"></i></span></div>
+    </div>
   </div>
-  <p class="pill complement"><span class="arrow" aria-hidden="true">→</span>Complements block nodes and proofs: they secure the source, HashWitness checks what apps read today.</p>
-  <aside class="speaker-notes" hidden><b>Redone · 3:35–4:15.</b> Who uses it? Schools issuing verifiable diplomas; recruiters who need one trustworthy check with a public receipt; and any app that reads Hedera through mirrors: wallets, explorers, dApps. The numbers are measured: zero lies accepted, in every testnet attack and in 200 simulated scenarios; 77 percent lower query cost with adaptive mirror selection, in simulation; three out of three attacks caught on real testnet data. And we do not compete with block nodes or state proofs: they make the source provable; we verify what applications actually read today, and can check those proofs as they become available.</aside>
+  <p class="pill complement" data-build="3"><span class="arrow" aria-hidden="true">→</span>Complements block nodes and proofs: they secure the source, HashWitness checks what apps read today.</p>
+  <aside class="speaker-notes" hidden><b>Redone · 3:35–4:15.</b> [→] Who uses it? Schools issuing verifiable diplomas; recruiters who need one trustworthy check with a public receipt; any app that reads Hedera through mirrors. [→] Measured: the naive app accepted the lie in all three attacks, HashWitness in none, on testnet and in 200 simulated scenarios; 77 percent lower query cost with adaptive mirror selection, in simulation; three out of three attacks caught on real testnet data. [→] We complement block nodes and state proofs: they secure the source, we verify what apps read today. [→ next slide]</aside>
 </section>
 
-<!-- 7. Conclusion & vision -->
+<!-- 7. Conclusion & vision: 3 steps -->
 <section class="slide grad" data-title="Vision">
-  <p class="eyebrow">07 · Vision</p>
-  <h1 style="font-size:var(--fs-h1)">Don't trust the mirror. <b>Verify</b> it.</h1>
+  <p class="eyebrow enter" style="--e:0">07 · Vision</p>
+  <h1 class="enter" style="--e:1">Don't trust the mirror. <b class="sweep light" style="--sd:4">Verify</b> it.</h1>
   <div class="vision">
-    <div class="vcard"><h2>What's different</h2><ul><li>Cryptographic anchor, not a majority vote</li><li>Works with today's mirror APIs</li><li>AI that explains, never decides</li></ul></div>
-    <div class="vcard"><h2>Honest limits</h2><ul><li>2 real mirrors, attacker simulated</li><li>Anchor from one consensus node</li><li>Mirror lag can look like replay</li></ul></div>
-    <div class="vcard"><h2>Next</h2><ul><li>Verify record-file signatures locally</li><li>Anchor from several consensus nodes</li><li>W3C Verifiable Credentials</li></ul></div>
+    <div class="vcard" data-build="1"><h2>What's different</h2><ul><li>Cryptographic anchor, not a majority vote</li><li>Works with today's mirror APIs</li><li>AI that explains, never decides</li></ul></div>
+    <div class="vcard" data-build="2"><h2>Honest limits</h2><ul><li>2 real mirrors, attacker simulated</li><li>Anchor from one consensus node</li><li>Mirror lag can look like replay</li></ul></div>
+    <div class="vcard" data-build="3"><h2>Next</h2><ul><li>Verify record-file signatures locally</li><li>Anchor from several consensus nodes</li><li>W3C Verifiable Credentials</li></ul></div>
   </div>
   <div class="vision-foot">
-    <div><p style="font-size:var(--fs-h2);font-weight:700">Thank you</p><p class="muted">DigiHacks · github.com/manelell83/hashwitness</p></div>
-    {{QR:repo}}
+    <div class="enter" style="--e:2"><p style="font-size:var(--fs-h2);font-weight:700">Thank you</p><p class="muted">DigiHacks · github.com/manelell83/hashwitness</p></div>
+    <span class="qr-wrap" data-build="3" style="--d:5">{{QR:repo}}</span>
   </div>
-  <aside class="speaker-notes" hidden><b>Redone (or Manal) · 4:15–4:55.</b> To conclude: what is different is the cryptographic anchor, not a vote; it works with the mirror APIs apps use today; and the AI explains but never decides. Our honest limits: two real mirrors, the attacker is simulated; the anchor comes from one consensus node; and normal mirror lag can look like a replay. Next: verify record-file signatures locally so one answer is provable on its own, take the anchor from several consensus nodes, and support W3C Verifiable Credentials. Don't trust the mirror: verify it. Thank you, the code and demo are on GitHub.</aside>
+  <aside class="speaker-notes" hidden><b>Redone (or Manal) · 4:15–4:55.</b> Don't trust the mirror: verify it. [→] What is different: a cryptographic anchor instead of a vote, it works with today's mirror APIs, and the AI explains but never decides. [→] Our honest limits: two real mirrors and a simulated attacker; the anchor comes from one consensus node; normal mirror lag can look like a replay. [→] Next: verify record-file signatures locally, anchor from several consensus nodes, W3C Verifiable Credentials. Thank you: the code and the demo are on GitHub.</aside>
 </section>

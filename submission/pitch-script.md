@@ -2,6 +2,19 @@
 
 Deck: `HashWitness-DigiHacks.html` (press **N** to see these notes on screen). Total: about 4 min 55 s.
 Speakers: **Manal** (slides 1–2), **Aymane** (slides 3–4), **Redone** (slides 5–7).
+The slides build up step by step (21 presses in total, each animation under 1 second); the timing below is unchanged.
+Press **→** at each [→] in the on-screen notes. If the screen share stutters, press **A** (static mode: every slide
+complete, no motion) and keep talking.
+
+| Slide | Presses | What appears |
+|---|---|---|
+| 1 | 0 | cover animation plays by itself |
+| 2 | 4 | school issues → consensus stamps the revocation → the mirror drops it → recruiter app says Valid + 3 attacks |
+| 3 | 4 | Verify → Explain → Prove → golden rule |
+| 4 | 3 | naive app Valid → mirrors checked, attacker flagged, Revoked → report + AI analysis |
+| 5 | 4 | issuer, HCS, mirrors → core + consensus anchor → AI agent + attestation topic → "why Hedera" cards |
+| 6 | 3 | users → the three measured numbers count up → block-nodes line |
+| 7 | 3 | what's different → honest limits → next + QR |
 Every number below is measured (README, NOTES.md, simulation output); say "in simulation" where it says so.
 
 | # | Slide | Speaker | Time |
@@ -38,7 +51,8 @@ attacker. Left: a naive app trusting that mirror says **Valid**. Right: HashWitn
 public mirror and Hgraph, agree; the attacker row is red, "Forged history", and the verdict is **Revoked**. Same for
 replay, flagged "Stale view", and equivocation, flagged "Two-faced". The report shows exactly which sequence numbers
 were altered, and the AI analysis, here answered by the LLM gpt-oss-20b.
-*Option:* click the demo card to play the 86-second video, or switch to the live app (`pnpm demo`), then come back.
+*Option:* click the Replay or Equivocate button to replay those attacks with their real results; or click the demo card
+to play the 86-second video, or switch to the live app (`pnpm demo`), then come back.
 **Hand-over:** "Redone will explain why this needs Hedera."
 
 ## 5. Technology & Hedera (Redone, 50 s)

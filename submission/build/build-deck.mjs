@@ -12,9 +12,10 @@ export const PAGES = "https://manelell83.github.io/hashwitness/";
 const VIDEO_URL = `${PAGES}HashWitness-demo.mp4`;
 const REPO_URL = "https://github.com/manelell83/hashwitness";
 
+// PNG, not SVG: the QR's SVG path has thousands of segments and froze the first frame it was drawn (~350 ms).
 async function qr(url, label, dark) {
-  const svg = await QRCode.toString(url, { type: "svg", margin: 1, errorCorrectionLevel: "M", color: { dark, light: "#ffffff" } });
-  return svg.replace("<svg ", `<svg class="qr" role="img" aria-label="${label}: ${url}" `);
+  const png = await QRCode.toDataURL(url, { margin: 1, width: 360, errorCorrectionLevel: "M", color: { dark, light: "#ffffff" } });
+  return `<img class="qr" src="${png}" alt="${label}: ${url}" decoding="sync">`;
 }
 
 // logo: the drawing elements of apps/web/public/logo.svg (metadata left out)
@@ -33,7 +34,8 @@ let slides = read("deck/slides.html").replace(/<!--[\s\S]*?-->/g, "") // comment
 const unresolved = slides.match(/{{[^}]+}}/g);
 if (unresolved) throw new Error(`unresolved placeholders: ${unresolved.join(", ")}`);
 
-const css = read("deck/palette.css") + read("deck/deck.css").replace("{{FONT}}", b64("assets/HankenGrotesk-wght.ttf", "font/ttf"));
+const css = read("deck/palette.css") + read("deck/deck.css").replace("{{FONT}}", b64("assets/HankenGrotesk-wght.ttf", "font/ttf"))
+  + read("deck/motion.css");
 const video = b64("../HashWitness-demo.mp4", "video/mp4");
 
 const html = `<!doctype html>
@@ -49,7 +51,10 @@ const html = `<!doctype html>
 <main class="stage" aria-roledescription="slide deck">
 ${slides}
 </main>
+<div class="progress" aria-hidden="true"></div>
+<div class="dots" aria-hidden="true"></div>
 <div class="counter" aria-live="polite"></div>
+<div class="toast" role="status"></div>
 <div class="notes" aria-label="Speaker notes"></div>
 <div class="modal" role="dialog" aria-label="Demo video"><button type="button">Close (Esc)</button><video controls playsinline preload="none" poster="${b64("assets/video-poster.jpg", "image/jpeg")}" src="${video}"></video></div>
 <script>${read("deck/deck.js")}</script>

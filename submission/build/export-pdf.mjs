@@ -1,4 +1,4 @@
-// Exports submission/HashWitness-DigiHacks.pdf from the HTML deck (Chrome print, fonts embedded) and screenshots
+// Exports submission/HashWitness-DigiHacks.pdf from the HTML deck in static mode (Chrome print, fonts embedded) and screenshots
 // every slide as the browser shows it (build/out/html-N.png), with ALL network requests blocked and logged:
 // the deck must work offline. Then compare.py checks that PDF pages and HTML slides look the same.
 //   node export-pdf.mjs
@@ -26,7 +26,7 @@ const errors = [];
 page.on("pageerror", (e) => errors.push(e.message));
 page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
 
-await page.goto(deck.href);
+await page.goto(deck.href + "?static"); // final state of every slide (no motion)
 await page.evaluate(() => document.fonts.ready);
 const fontOk = await page.evaluate(() => document.fonts.check('700 40px "Hanken Grotesk"'));
 const n = await page.locator(".slide").count();
